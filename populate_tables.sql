@@ -19,6 +19,21 @@ INSERT INTO doctor (docID, docFirstName, docLastName, docEmail, docPhone) VALUES
 INSERT INTO doctor (docID, docFirstName, docLastName, docEmail, docPhone) VALUES (4,'David','dixon', 'ddixon@example.com', '(541) 555-0023');
 INSERT INTO doctor (docID, docFirstName, docLastName, docEmail, docPhone) VALUES (5,'Darcy','Dean', 'ddean@example.com', '(541) 555-0024');
 
+/* Filling the exercise table */
+INSERT INTO exercise (exrID, exrName, exrType)
+VALUES
+(1, 'Running', 'Cardio'),
+(2, 'Swimming', 'Cardio'),
+(3, 'Rowing', 'Cardio'),
+(4, 'Biking', 'Cardio'),
+(5, 'Jump Rope', 'Cardio'),
+(6, 'Squat', 'Strength'),
+(7, 'Deadlift', 'Strength'),
+(8, 'Bench', 'Strength'),
+(9, 'Back Row', 'Strength'),
+(10, 'Pullup', 'Strength'),
+(11, 'Pushup', 'Strength'),
+(12, 'Situp', 'Strength');
 
 /* Filling the athlete Table*/
 
@@ -34,9 +49,52 @@ INSERT INTO athlete (athID, trnID, docID, athFirstName, athLastname, athDateOfBi
 VALUES (5, 5, 5, 'Amelia', 'Abbott', '2000-01-05', 'aabbott@example.com', '(541) 555-0014');
 
 
+/* Filling the workoutPlan table */
+INSERT INTO workoutPlan (wrkPlanID, athID, wrkPlanStartDate, wrkPlanEndDate, wrkPlanSchedule)
+VALUES
+(1, 1, '2023-01-01', '2023-01-15', 'Three times a weekathID'),
+(2, 2, '2023-02-02', '2023-02-22', 'Every Monday and Thursday'),
+(3, 1, '2023-01-15', '2023-02-01', 'Three times a week'),
+(4, 3, '2023-04-01', '2023-04-08', 'Two times a week'),
+(5, 2, '2023-02-23', '2023-03-01', 'Four times a week');
 
-/* Workout Plan here */
+/* Filling the exercisePlan table */
+INSERT INTO exercisePlan (exrPlanID, exrID, wrkPlanID, exrPlanNotes)
+VALUES
+(1, 1, 1, ''),
+(2, 4, 2, 'Warmup'),
+(3, 10, 2, ''),
+(4, 11, 2, ''),
+(5, 12, 2, ''),
+(6, 5, 3, '3 sets of 30 seconds'),
+(7, 6, 3, 'Maximise power, move weight quickly'),
+(8, 7, 3, 'Maximise power, move weight quickly'),
+(10, 6, 4, 'First set should be warmup, weight is target for last set'),
+(11, 8, 4, 'First set should be warmup, weight is target for last set'),
+(12, 9, 4, 'First set should be warmup, weight is target for last set'),
+(13, 1, 4, ''),
+(14, 2, 5, '');
 
+/* Filling the cardioPlan table */
+INSERT INTO cardioPlan (exrPlanID, cdoPlanSets, cdoPlanDistance, cdoPlanDuration)
+VALUES
+(1, 1, 2.0, NULL),
+(2, 1, NULL, 5.0),
+(6, 3, NULL, 0.5),
+(13, 1, NULL, 10.0),
+(14, 5, 100.0, NULL);
+
+/* Filling the strengthPlan table */
+INSERT INTO exercisePlan (exrPlanID, strPlanSets, strPlanReps, strPlanWeight)
+VALUES
+(3, 3, 8, NULL),
+(4, 3, 15, NULL),
+(5, 3, 20, NULL),
+(7, 4, 4, 145),
+(8, 4, 4, 245),
+(10, 3, 6, 200),
+(11, 3, 6, 150),
+(12, 3, 6, 120);
 
 /* Filling the workoutLog Table */
 INSERT INTO workoutLog (wrkLogID, wrkPlanID, wrkLogDate) 
