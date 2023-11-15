@@ -158,14 +158,3 @@ VALUES (19, 3, 6, 165);
 INSERT INTO strengthLog (strLogID, strLogSets, strLogReps, strLogWeight) 
 VALUES (20, 3, 6, 135);
 
-
-
-
-
-
-
-
-
-
-
-
