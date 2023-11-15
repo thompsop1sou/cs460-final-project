@@ -33,7 +33,7 @@ ALTER TABLE doctor
 CREATE TABLE exercise(
     exrID INT(4) NOT NULL,
     exrName VARCHAR(100) NOT NULL,
-    exrType ENUM('Cardio', 'Strength')
+    exrType ENUM('Cardio', 'Strength') NOT NULL
 );
 
 ALTER TABLE exercise
@@ -74,7 +74,7 @@ ALTER TABLE athlete
 CREATE TABLE workoutPlan(
     wrkPlanID INT(4) NOT NULL,
     athID INT(4) NOT NULL,
-    wrkPlanName VARCHAR(100),
+    wrkPlanName VARCHAR(100) NOT NULL,
     wrkPlanStartDate DATE NOT NULL,
     wrkPlanEndDate DATE NOT NULL,
     wrkPlanSchedule VARCHAR(100)
