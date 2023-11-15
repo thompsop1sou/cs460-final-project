@@ -110,7 +110,7 @@ ALTER TABLE exercisePlan
 
 ALTER TABLE exercisePlan
     ADD CONSTRAINT exrPlanWrkPlanFK
-    FOREIGN KEY wrkPlanID
+    FOREIGN KEY (wrkPlanID)
     REFERENCES workoutPlan(wrkPlanID);
 
 
