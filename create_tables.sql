@@ -33,7 +33,7 @@ ALTER TABLE doctor
 CREATE TABLE exercise(
     exrID INT(4) NOT NULL,
     exrName VARCHAR(100) NOT NULL,
-    exrType ENUM('cardio', 'strength')
+    exrType ENUM('Cardio', 'Strength')
 );
 
 ALTER TABLE exercise
