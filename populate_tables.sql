@@ -53,6 +53,13 @@ VALUES
 (4, 3, '', '2023-04-01', '2023-04-08', 'Two times a week'),
 (5, 2, '', '2023-02-23', '2023-03-01', 'Four times a week');
 
+/* Adding names to workoutPlan table */
+UPDATE workoutPlan SET wrkPlanName = 'Run' WHERE wrkPlanID = 1;
+UPDATE workoutPlan SET wrkPlanName = 'Bodyweight Workout' WHERE wrkPlanID = 2;
+UPDATE workoutPlan SET wrkPlanName = 'Lower Body Power' WHERE wrkPlanID = 3;
+UPDATE workoutPlan SET wrkPlanName = 'Full Body Workout' WHERE wrkPlanID = 4;
+UPDATE workoutPlan SET wrkPlanName = 'Swim' WHERE wrkPlanID = 5;
+
 /* Filling the exercisePlan table */
 INSERT INTO exercisePlan (exrPlanID, exrID, wrkPlanID, exrPlanNotes)
 VALUES
