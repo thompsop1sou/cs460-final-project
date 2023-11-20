@@ -55,6 +55,11 @@ CREATE TABLE athlete(
 );
 
 ALTER TABLE athlete
+	ADD athActive BOOLEAN 
+    NOT NULL 
+    DEFAULT TRUE;
+
+ALTER TABLE athlete
     ADD CONSTRAINT athPK
     PRIMARY KEY (athID);
 
