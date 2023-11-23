@@ -136,7 +136,7 @@ CALL athleteLogProcedure(1, '2023-01-01', '2023-01-19');
 /*
 FUNCTION
 
-Title: cardioPlanSpeedFunction and cardioPlanLogFunction
+Title: cardioPlanSpeedFunction and cardioLogSpeedFunction
 Description: Calculates the average speed of a cardio exercise (using the distance and duration associated with the exercise).
 Justification: This could be used 
 Expected Execution: It would take in the ID of the cardio exercise plan/log, then use that to find the distance and duration, then return the distance divided by the duration.
