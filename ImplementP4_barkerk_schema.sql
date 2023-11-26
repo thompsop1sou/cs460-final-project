@@ -409,5 +409,32 @@ select * from athPerTrn;
 
 /*      Testing Procedure Code      */
 select wrkPlanID, athID, wrkPlanName, wrkPlanStartDate, wrkPlanEndDate, wrkPlanSchedule from workoutPlan 
-where wrkPlanStartDate > '2023-04-01' and wrkPlanEndDate < '2023-10-01' and athID = 1;
+where athID = 1 and wrkPlanStartDate between '2023-01-01' and '2023-01-20';
+
+call availableWorkouts(1, '2023-01-01', '2023-01-20');
+
+
+/*        Testing Function        */
+
+select * from workoutLog;
+select * from exerciseLog;
+select * from workoutLog wl join exerciseLog el join strengthLog sl where wl.wrkLogID = el.wrkLogID and el.exrLogID = sl.exrLogID;
+
+
+-- NEED TO FINISH
+
+
+
+/*        Testing Trigger       */
+
+INSERT INTO workoutLog (wrkLogID, wrkPlanID, wrkLogDate) 
+VALUES
+(1, 1, '2023-02-01'); -- Fails because the date is invalid
+
+INSERT INTO workoutLog (wrkLogID, wrkPlanID, wrkLogDate) 
+VALUES
+(10, 1, '2023-01-04'); -- successful entry
+
+
+
 
