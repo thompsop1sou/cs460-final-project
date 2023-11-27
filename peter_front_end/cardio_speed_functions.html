@@ -1,0 +1,97 @@
+<!doctype HTML>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title> Motion Sense - Cardio Speed Functions </title>
+        <link rel="stylesheet" href="basic_style.css">
+    </head>
+    <body>
+        <!-- Database project title -->
+        <h1> <a href="index.html">Motion Sense</a> </h1>
+        <!-- Page Title -->
+        <h3> Cardio Speed Functions </h3>
+        <!-- Author -->
+        <p>
+            <b>Author:</b> Peter Thompson
+        </p>
+        <!-- Description -->
+        <p>
+            <b>Description:</b> These two functions both calculate the average speed of a cardio
+            exercise, using the distance and duration associated with the exercise. One function is
+            for entries in the cardioPlan table; the other is for entries in the cardioLog table.
+        </p>
+        <!-- Justification -->
+        <p>
+            <b>Justification:</b> This could be used in a procedure or view which summarizes data
+            from a plan or log. For example, if a trainer has planned for an athlete to run two
+            miles in sixteen minutes, the athlete might want to be able to quickly see what pace
+            they need to set in order to reach that goal.
+        </p>
+        <!-- Expected Execution -->
+        <p>
+            <b>Expected Execution:</b> Both functions require the ID of the cardio plan or log.
+            They then use that ID to find the distance and duration and return the result of the
+            distance divided by the duration. Some valid inputs include:
+        </p>
+        <ul>
+            <li>
+                Cardio <b>plan</b> with ID <b>1</b>.
+                <ul>
+                    <li>
+                        This should return null because this cardio plan does not have a duration.
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Cardio <b>plan</b> with ID <b>3</b>.
+                <ul>
+                    <li>
+                        This should return nothing because there is no cardio plan with ID 0 (this
+                        ID actually refers to a strength plan).
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Cardio <b>log</b> with ID <b>1</b>.
+                <ul>
+                    <li>
+                        This should return 0.1333 (distance / duration = 2 / 15).
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Cardio <b>log</b> with ID <b>4</b>.
+                <ul>
+                    <li>
+                        This should return null because this cardio log does not have a distance.
+                    </li>
+                </ul>
+            </li>
+            <li>
+                Cardio <b>log</b> with ID <b>21</b>.
+                <ul>
+                    <li>
+                        This should return 0.09 (distance / duration = 0.9 / 10).
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <!-- Form -->
+        <form action="cardio_speed_functions.php" method="post">
+            <p>
+                <label for="trgt_table"> Target Table: </label>
+                <select name="trgt_table" id="trgt_table" required>
+                    <option value="Plan">Plan</option>
+                    <option value="Log">Log</option>
+                </select>
+            </p>
+            <p>
+                <label for="cdo_id"> Cardio Plan/Log ID: </label>
+                <input type="text" id="cdo_id" name="cdo_id" placeholder="whole number" pattern="[0-9]+" required>
+            </p>
+            <p>
+                <input type="submit" name="submit" value="Submit">
+            </p>
+        </form>
+    </body>
+</html>
