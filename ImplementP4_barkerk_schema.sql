@@ -401,10 +401,14 @@ select * from athlete;
 select * from workoutPlan;
 
 /*        View         */
+drop view athPerTrn;
 CREATE VIEW athPerTrn AS
-SELECT t.trnID AS 'ID', t.trnFirstName AS 'First Name', t.trnLastName AS 'Last Name', count(athID) AS 'Number of Athletes'
-FROM athlete a JOIN trainer t ON t.trnID = a.trnID group by t.trnID;
+SELECT t.trnID AS ID, t.trnFirstName AS FirstName, t.trnLastName AS LastName, count(athID) AS NumberofAthletes
+FROM athlete a JOIN trainer t ON t.trnID = a.trnID where a.athActive = true group by t.trnID;
 select * from athPerTrn;
+
+select * from athPerTrn;
+
 
 
 /*      Testing Procedure Code      */
@@ -434,6 +438,8 @@ VALUES
 INSERT INTO workoutLog (wrkLogID, wrkPlanID, wrkLogDate) 
 VALUES
 (10, 1, '2023-01-04'); -- successful entry
+
+select * from workoutLog;
 
 
 
