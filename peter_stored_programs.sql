@@ -65,7 +65,7 @@ PROCEDURE
 Title: athleteLogProcedure
 Description: This procedure will return a result set containing all of the logs for a particular athlete during a particular date range.
 Justification: This procedure could be used by trainers who want to see a report of what an athlete has done during the past week (or some other time period).
-Expected Execution: Inputs to the procedure include the ID of the athlete, a start date, and an end date. The procedure will return a single result set which is 
+Expected Execution: Inputs to the procedure include the ID of the athlete, a start date, and an end date. The procedure will return a single result set.
 */
 
 -- Building the views which will support this procedure.
@@ -128,7 +128,7 @@ END
 -- Testing out procedure
 
 CALL athleteLogProcedure(1, '2023-01-01', '2023-01-05');
-CALL athleteLogProcedure(2, '2023-02-02', '2023-02-02');
+CALL athleteLogProcedure(2, '2023-02-02', '2023-02-06');
 CALL athleteLogProcedure(1, '2023-01-01', '2023-01-19');
 
 
@@ -190,9 +190,11 @@ END
 SELECT * FROM cardioLog;
 
 SELECT cardioLogSpeedFunction(0); -- Should be null because there is no exercise log with ID 0
+SELECT cdoLogDistance, cdoLogDuration FROM cardioLog WHERE exrLogID=1;
 SELECT cardioLogSpeedFunction(1); -- Should return 0.1333
 SELECT cardioLogSpeedFunction(4); -- Should be null because this cardio log does not have a distance
 SELECT cardioLogSpeedFunction(5); -- Should be null because this exercise log ID refers to a strength log (not to a cardio log)
+SELECT cdoLogDistance, cdoLogDuration FROM cardioLog WHERE exrLogID=21;
 SELECT cardioLogSpeedFunction(21); -- Should return 0.09
 
 

@@ -1,0 +1,73 @@
+<!doctype HTML>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title> Motion Sense - Exercise Log Triggers </title>
+        <link rel="stylesheet" href="basic_style.css">
+    </head>
+    <body>
+        <!-- Database project title -->
+        <h1> <a href="index.html">Motion Sense</a> </h1>
+        <!-- Page Title -->
+        <h3> Exercise Log Triggers </h3>
+        <!-- Author -->
+        <p>
+            <b>Author:</b> Peter Thompson
+        </p>
+        <!-- Description -->
+        <p>
+            <b>Description:</b> These triggers ensure that data entered into the exerciseLog table
+            is valid, which means that it refers to the same entry in the workoutPlan table whether
+            you get there through the workoutLog table or through the exercisePlan table.
+        </p>
+        <!-- Justification -->
+        <p>
+            <b>Justification:</b> Because of a loop in our table relationships, it is possible that
+            we could create an entry in the exerciseLog table that refers to one workoutPlan entry
+            when you take one path and refers to a different workoutPlan entry when you take the
+            other path. See the following image for an illustration of the two paths:
+        </p>
+        <img src="db_loop.png" alt="Database Loop">
+        <!-- Expected Execution -->
+        <p>
+            <b>Expected Execution:</b> These triggers will be called automatically before an
+            insertion or update on the exerciseLog table. If they find invalid data, they will
+            throw an error and stop the insertion/update. Otherwise, they won't have any impact.
+        </p>
+        <p>
+            Because these triggers are complicated and rely on having certain data already in the
+            database (you can't add an entry in the exerciseLog table without a corresponding one
+            in the workoutLog table), here are three pre-built scenarios that can be run to show
+            these triggers working:
+        </p>
+        <!-- Form -->
+        <form action="exercise_log_triggers.php" method="post">
+            <p>
+                <input type="submit" name="invalid_insert" value="Invalid Insert">
+                <label for="invalid_insert">
+                    After creating the necessary entry in the workoutLog table, this will attempt
+                    to insert an entry into the exerciseLog table which points to two different
+                    entries in the workoutPlan table. It should fail and produce an error.
+                </label>
+            </p>
+            <p>
+                <input type="submit" name="valid_insert" value="Valid Insert">
+                <label for="valid_insert">
+                    After creating the necessary entry in the workoutLog table, this will attempt
+                    to insert an entry into the exerciseLog table which points to just one entry in
+                    the workoutPlan table. It should succeed. (Note that the changes will not be
+                    committed to the database, so this can be run as many times as desired.)
+                </label>
+            </p>
+            <p>
+                <input type="submit" name="invalid_update" value="Invalid Update">
+                <label for="invalid_update">
+                    This update attempts to change an existing entry in the exerciseLog table and
+                    cause it to point to a different entry in the exercisePlan table. Since this
+                    change would cause it to point to two different entries in the workoutPlan
+                    table, it should fail and produce an error.
+                </label>
+            </p>
+        </form>
+    </body>
+</html>
