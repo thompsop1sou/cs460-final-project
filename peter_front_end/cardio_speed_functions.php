@@ -13,7 +13,7 @@
         <!-- Query Results -->
         <?php
             // Credientials
-            require_once "/home/SOU/thompsop1/dbconfig.php";
+            require_once "/home/SOU/thompsop1/final_db_config.php";
 
             // Turn error reporting on
             error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
