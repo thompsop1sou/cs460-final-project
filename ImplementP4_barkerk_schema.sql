@@ -441,6 +441,8 @@ VALUES
 
 select * from workoutLog;
 
+delete from workoutLog where wrkLogID = 12;
+
 
 
 

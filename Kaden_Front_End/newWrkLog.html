@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<!-- Basic form to accept input via a webinterface 
+Author: Kaden Barker
+Fall 2023 CS 460
+
+-->
+
+</head>
+
+<body>
+
+    <h2> Trigger Execution </h2>
+    <h4> Author: Kaden Barker </h4>
+    <p> This page provides an example interface to show that the workoutLog_BEFORE_INSERT trigger
+        is working correctly.
+    </p>
+    <h4 style="display:inline;"> Description: </h4>
+    <p style="display:inline;"> The before insert trigger on the workoutLog table enfores that an 
+                                athlete will not complete a log for a workout that isn't available
+                                on the date entered.
+    </p>
+    <br/>
+    <br/>
+    <h4 style="display:inline;"> Justification: </h4>
+    <p style="display:inline;"> Workouts are provided over a specific time inorder to produce results.
+                                It is important that athletes are only entering logs for workouts that 
+                                are availble for that date range.
+                            </p>
+    <br/>
+    <br/>
+    <h4 style="display:inline;"> Execution Examples: </h4>
+    <p style="display:inline;"> In the real world the athlete would know what workout there on and would also know what 
+                                workout plan that they just completed. In this representation try creating a workoutLog.
+                                Set the workoutLog number to 11, the workoutPlan number to 1, and the date to 2023-02-07.
+                                After clicking submit you will see that an error occured. This is because the trigger caught
+                                that the date entered is out of the range of the workout plan. Now change the completion date
+                                to 2023-01-07. As you can see the entry was successfull. </p>
+
+
+
+	<p>Please enter the following information for the new Log: </p>
+
+	<!-- use the POST method to pass data to insert_dept.php -->
+  	<form action="insertWrkLog.php" method="POST">
+
+      WorkoutLog Number: <input type="number" name="wrkLogID"><br><br>
+      Workout Plan Number: <input type="number" name="wrkPlanID"><br><br>
+      Completion Date: <input type="text" name="wrkLogDate"><br><br>
+      
+      <input type="submit" value="Submit" name="submit">
+
+
+	</form>
+
+</body>
+
+</html>
