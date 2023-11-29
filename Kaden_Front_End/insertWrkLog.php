@@ -46,6 +46,9 @@ if ($dbconnect->connect_error) {
 }
 echo "Connected successfully... </br>";
 
+// Turn off autocommit
+mysqli_autocommit($dbconnect, false);
+
 if(isset($_POST['submit'])) {
   $wrkLogID=$_POST['wrkLogID'];
   $wrkPlanID=$_POST['wrkPlanID'];
@@ -59,35 +62,37 @@ if(isset($_POST['submit'])) {
     } else {
       echo "Thanks for the update.";
 
-      // build query
-      $getWrkLogTbl = "select * from workoutLog"; // string needs quotes
-      // execute query
-      $retval = mysqli_query($dbconnect, $getWrkLogTbl); 
-      // if one or more rows were returned
-      if(mysqli_num_rows($retval) > 0){  
-        // while there is data to be fetched
-        while($row = mysqli_fetch_assoc($retval)) {  
-          // access data an build HTML table row
-            echo 
-              "
-                <tr>
-                  <td>{$row['wrkLogID']}</td>  
-                  <td>{$row['wrkPlanID']}</td>
-                  <td>{$row['wrkLogDate']}</td>
-      
-                </tr>\n";  
-        } // end while
-      } else {  
-          echo "No results found";  
-      }
-
-      echo "<h4><a href='/~barkerk/newWrkLog.html'>Create another WorkoutLog</a><h4>";
-      echo "<h4><a href='/~barkerk/landingPage.html'>Landing Page</a><h4>";
-
-
     }
+
+    // build query
+    $getWrkLogTbl = "select * from workoutLog"; // string needs quotes
+    // execute query
+    $retval = mysqli_query($dbconnect, $getWrkLogTbl); 
+    // if one or more rows were returned
+    if(mysqli_num_rows($retval) > 0){  
+      // while there is data to be fetched
+      while($row = mysqli_fetch_assoc($retval)) {  
+        // access data an build HTML table row
+          echo 
+            "
+              <tr>
+                <td>{$row['wrkLogID']}</td>  
+                <td>{$row['wrkPlanID']}</td>
+                <td>{$row['wrkLogDate']}</td>
+    
+              </tr>\n";  
+      } // end while
+    } else {  
+        echo "No results found";  
+    }
+
+    echo "<h4><a href='/~barkerk/newWrkLog.html'>Create another WorkoutLog</a><h4>";
+    echo "<h4><a href='/~barkerk/landingPage.html'>Landing Page</a><h4>";
+
 }
 
+// Rollback any changes
+mysqli_rollback($dbconnect);
 // close connection
 mysqli_close($dbconnect);
 ?> <!-- signifiies the end of PHP code -->
