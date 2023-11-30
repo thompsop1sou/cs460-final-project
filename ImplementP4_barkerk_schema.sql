@@ -420,8 +420,7 @@ call availableWorkouts(1, '2023-01-01', '2023-01-20');
 
 /*        Testing Function        */
 
-CREATE FUNCTION `exericiseProgress` (in_athID INT, in_exerciseName VARCHAR(100))
-RETURNS decimal
+CREATE DEFINER=`barkerk`@`%` FUNCTION `exerciseProgress`(in_athID INT, in_exerciseName VARCHAR(100)) RETURNS decimal(10,0)
 BEGIN
 	DECLARE o_progress DECIMAL;
     DECLARE l_exrType ENUM('Cardio', 'Strength');
@@ -431,56 +430,54 @@ BEGIN
     
 	SELECT exrType INTO l_exrType FROM exercise WHERE in_exerciseName = exrName;
     
-    DROP TEMPORARY TABLE IF EXISTS exrProgress;
-    CREATE TEMPORARY TABLE exrProgress (
-		logDate DATE,
-        exrStat FLOAT
-    );
-    
     IF l_exrType = 'Strength' THEN
-		SELECT
-			wl.wrkLogDate AS logDate,
-			sl.strLogWeight AS weightUsed
-		INTO 
-			exrProgress
-		FROM
-			workoutLog wl
-			JOIN workoutPlan wp ON wl.wrkPlanID = wp.wrkPlanID 
-			JOIN exerciseLog el ON wl.wrkLogID = el.wrkLogID
-			JOIN strengthLog sl ON el.exrLogID = sl.exrLogID
-			JOIN exercisePlan ep ON el.exrPlanID = ep.exrPlanID
-			JOIN exercise ex ON ep.exrID = ex.exrID
-			JOIN athlete ath ON wp.athID = ath.athID
-		WHERE
-			ath.athID = in_athID
-			AND ex.exrName = in_exerciseName;
+		DROP TEMPORARY TABLE IF EXISTS exrProgress;
+		CREATE TEMPORARY TABLE exrProgress AS
+			SELECT
+				wl.wrkLogDate AS logDate,
+				sl.strLogWeight AS weightUsed
+			FROM
+				workoutLog wl
+				JOIN workoutPlan wp ON wl.wrkPlanID = wp.wrkPlanID 
+				JOIN exerciseLog el ON wl.wrkLogID = el.wrkLogID
+				JOIN strengthLog sl ON el.exrLogID = sl.exrLogID
+				JOIN exercisePlan ep ON el.exrPlanID = ep.exrPlanID
+				JOIN exercise ex ON ep.exrID = ex.exrID
+				JOIN athlete ath ON wp.athID = ath.athID
+			WHERE
+				ath.athID = in_athID
+				AND ex.exrName = in_exerciseName;
             
+            
+            SET firstInstance = (SELECT weightUsed FROM exrProgress WHERE logDate = (SELECT min(logDate) FROM exrProgress));
+            SET lastInstance = (SELECT weightUsed FROM exrProgress WHERE logDate = (SELECT max(logDate) FROM exrProgress));
+            SET o_progress = lastInstance - firstInstance;
 	ELSE 
-		SELECT
-			wl.wrkLogDate AS logDate,
-			cl.CdoPlanDuration AS duration
-		INTO 
-			exrProgress
-		FROM
-			workoutLog wl
-			JOIN workoutPlan wp ON wl.wrkPlanID = wp.wrkPlanID 
-			JOIN exerciseLog el ON wl.wrkLogID = el.wrkLogID
-			JOIN cardioLog cl ON el.exrLogID = cl.exrLogID
-			JOIN exercisePlan ep ON el.exrPlanID = ep.exrPlanID
-			JOIN exercise ex ON ep.exrID = ex.exrID
-			JOIN athlete ath ON wp.athID = ath.athID
-		WHERE
-			ath.athID = in_athID
-			AND ex.exrName = in_exerciseName;
+		DROP TEMPORARY TABLE IF EXISTS exrProgress;
+		CREATE TEMPORARY TABLE exrProgress AS
+			SELECT
+				wl.wrkLogDate AS logDate,
+				cl.CdoPlanDuration AS duration
+			FROM
+				workoutLog wl
+				JOIN workoutPlan wp ON wl.wrkPlanID = wp.wrkPlanID 
+				JOIN exerciseLog el ON wl.wrkLogID = el.wrkLogID
+				JOIN cardioLog cl ON el.exrLogID = cl.exrLogID
+				JOIN exercisePlan ep ON el.exrPlanID = ep.exrPlanID
+				JOIN exercise ex ON ep.exrID = ex.exrID
+				JOIN athlete ath ON wp.athID = ath.athID
+			WHERE
+				ath.athID = in_athID
+				AND ex.exrName = in_exerciseName;
+            
+            SET firstInstance = (SELECT duration FROM exrProgress WHERE logDate = (SELECT min(logDate) FROM exrProgress));
+            SET lastInstance = (SELECT duration FROM exrProgress WHERE logDate = (SELECT max(logDate) FROM exrProgress));
+            SET o_progress = (lastInstance - firstInstance);
 	END IF;
     
-    -- Get the first instance of the exercise
-    -- Get the last instance of the exercise
-    -- set o_progress equal to last minus first
     
 	RETURN o_progress;
 END
-
 
 select * from workoutLog;
 select * from athlete;
@@ -488,7 +485,9 @@ select * from workoutPlan;
 select * from exercisePlan;
 select * from exercise;
 
--- NEED TO FINISH
+
+select exerciseProgress(1, 'Squat') as progress;
+
 
 
 
