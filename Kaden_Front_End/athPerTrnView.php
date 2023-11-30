@@ -30,7 +30,7 @@
   <td>Last Name</td>
   <td>Number of Athletes</td>
 </tr>
-<h4><a href="/~barkerk/landingPage.html">Landing Page</a></h4>
+<h4><a href="/~thompsop1/motion_sense/index.html">Landing Page</a></h4>
 
 <?php
 /************

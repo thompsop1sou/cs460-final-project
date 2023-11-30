@@ -87,7 +87,7 @@ if(isset($_POST['submit'])) {
     }
 
     echo "<h4><a href='/~barkerk/newWrkLog.html'>Create another WorkoutLog</a><h4>";
-    echo "<h4><a href='/~barkerk/landingPage.html'>Landing Page</a><h4>";
+    echo "<h4><a href='/~thompsop1/motion_sense/index.html'>Landing Page</a><h4>";
 
 }
 
