@@ -87,3 +87,5 @@ mysqli_free_result($retval);
 mysqli_close($mysqli); 
 
 ?> 
+</body>
+</html>
