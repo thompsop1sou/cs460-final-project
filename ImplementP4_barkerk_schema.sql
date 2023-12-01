@@ -480,9 +480,12 @@ BEGIN
 END
 
 select * from workoutLog;
-select * from athlete;
+select * from exerciseLog;
+select * from strengthLog;
 select * from workoutPlan;
 select * from exercisePlan;
+select * from athlete;
+
 select * from exercise;
 
 
@@ -502,6 +505,8 @@ VALUES
 (10, 1, '2023-01-04'); -- successful entry
 
 use usr_barkerk_0;
+set sql_safe_updates = 0;
+update strengthLog set strLogWeight = 155 where exrLogID = 16;
 
 delete from workoutLog where wrkLogID = 12;
 

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<!-- Basic form to accept input via a webinterface 
+Author: Kaden Barker
+Fall 2023 CS 460
+
+-->
+
+</head>
+
+<body>
+
+    <h2> Function Execution </h2>
+    <h4> Author: Kaden Barker </h4>
+    <p> This page provides an example interface to show that the exerciseProgress function
+        is working correctly.
+    </p>
+    <h4 style="display:inline;"> Description: </h4>
+    <p style="display:inline;"> The exerciseProgress fuction is designed so that an athlete or trainer can
+                                search an exercise and see the progress that was made from their first time logging 
+                                the exercise to their last time.
+    </p>
+    <br/>
+    <br/>
+    <h4 style="display:inline;"> Justification: </h4>
+    <p style="display:inline;"> Athletes work with trainers to improve them selves or recover from injury. This is why it
+                                is important to have a way of seeing progress. If a trainer isn't seeing enough progress in their 
+                                athlete then the trainer knows that something isn't working. Similarly if an athlete isn't seeing 
+                                progress then they know that they may need to find a differnent trainer. That being said this function 
+                                returns progress for one exercise, however it could also be used in a procedure to generate a progress 
+                                report for everything an athlete does.
+                            </p>
+    <br/>
+    <br/>
+    <h4 style="display:inline;"> Execution Examples: </h4>
+    <p style="display:inline;"> An athlete that uses this system will know there Athlete ID just as most students know their student ID. They will 
+                                also know what exercises they have been doing. That being said try entering 1 for the Athlete ID and squat for the 
+                                Exercise Name. You will see that athlete 1 has increased by 10 since they started working with their trainer.
+                                Now try entering deadlift for the Exercise Name. You can now see that athlete 1 hasn't improved their deadlift yet.</p>
+
+
+
+	<p>Please enter the following information to see your progress: </p>
+
+	<!-- use the POST method to pass data to insert_dept.php -->
+  	<form action="exerciseProgress.php" method="POST">
+
+      Athlete ID: <input type="number" name="athID"><br><br>
+      Exercise Name: <input type="text" name="exrName"><br><br>
+      
+      <input type="submit" value="Submit" name="submit">
+
+
+	</form>
+
+</body>
+
+</html>
