@@ -9,7 +9,7 @@
         <!-- Database project title -->
         <h1> <a href="index.html">Motion Sense</a> </h1>
         <!-- Page Title -->
-        <h3> Athlete Log Procedure </h3>
+        <h3> <a href="athlete_log_procedure_form.php">Athlete Log Procedure</a> </h3>
         <!-- Query Results -->
         <?php
             // Credientials

@@ -9,7 +9,7 @@
         <!-- Database project title -->
         <h1> <a href="index.html">Motion Sense</a> </h1>
         <!-- Page Title -->
-        <h3> Athlete Log Procedure </h3>
+        <h3> <a href="athlete_log_procedure_form.php">Athlete Log Procedure</a> </h3>
         <!-- Author -->
         <p>
             <b>Author:</b> Peter Thompson
@@ -32,7 +32,7 @@
         </p>
         <ul>
             <li>
-                Athlete <b>Andrea Adams</b> from <b>2023-01-01</b> to <b>2023-01-05</b>.
+                Athlete <b>Andrea Adams</b> from <b>2023-01-01</b> to <b>2023-01-04</b>.
                 <ul>
                     <li>
                         This should return two rows, each of which is for a workout called "Run".
@@ -59,64 +59,68 @@
             </li>
         </ul>
         <!-- Form -->
-        <form action="athlete_log_procedure_results.php" method="post">
+        <?php
+            // Credientials
+            require_once "/home/SOU/thompsop1/final_db_config.php";
+
+            // Turn error reporting on
+            error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+            ini_set("display_errors", "1");
+
+            // Create connection using procedural interface
+            $mysqli = mysqli_connect($hostname,$username,$password,$schema);
+
+            // Check connection
+            if (!$mysqli) {
+                echo "<p><em>There was an error connecting to the database.</em></p>\n";
+            } else {
+                // Build query string
+                $sql = "SELECT athID, athFirstName, athLastName FROM athlete";
+                // Execute query using the connection created above
+                $retval = mysqli_query($mysqli, $sql);
+
+                // No results
+                if (!(mysqli_num_rows($retval) > 0)) {
+                    echo "<p><em>No athletes found in database.</em></p>\n";
+                // Some results
+                } else {
+                    // Start of the form
+                    echo "
+        <form action=\"athlete_log_procedure_results.php\" method=\"post\">
             <p>
-                <?php
-                    // Credientials
-                    require_once "/home/SOU/thompsop1/final_db_config.php";
+                <label for=\"ath_id\"> Athlete: </label>
+                <select id=\"ath_id\" name=\"ath_id\" required>";
 
-                    // Turn error reporting on
-                    error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
-                    ini_set("display_errors", "1");
-
-                    // Create connection using procedural interface
-                    $mysqli = mysqli_connect($hostname,$username,$password,$schema);
-
-                    // Check connection
-                    if (!$mysqli) {
-                        echo "<em>There was an error connecting to the database.</em>\n";
-                    } else {
-                        // Build query string
-                        $sql = "SELECT athID, athFirstName, athLastName FROM athlete";
-                        // Execute query using the connection created above
-                        $retval = mysqli_query($mysqli, $sql);
-
-                        // Display the results
-                        if (mysqli_num_rows($retval) > 0) {
-                            // Label for the athlete selection field
-                            echo "<label for=\"ath_id\"> Athlete: </label>\n";
-                            // Start of selection field
-                            echo "<select id=\"ath_id\" name=\"ath_id\" required>\n";
-                            // Show each row
-                            while ($row = mysqli_fetch_assoc($retval)) {
-                                echo "<option value=\"" . $row["athID"] . "\">" . $row["athFirstName"] . " " . $row["athLastName"] . "</option>\n";
-                            }
-                            // End the selection field
-                            echo "</select>\n";
-                        // No results
-                        } else {
-                            echo "<em>No athletes found in database.</em>\n";
-                        }
-
-                        // Free result set
-                        mysqli_free_result($retval);
+                    // Add each athlete to the select field
+                    while ($row = mysqli_fetch_assoc($retval)) {
+                        echo "
+                    <option value=\"" . $row["athID"] . "\">" . $row["athFirstName"] . " " . $row["athLastName"] . " (ID " . $row["athID"] . ")</option>";
                     }
 
-                    // Close connection
-                    mysqli_close($mysqli);
-                ?>
+                    // End of the form
+                    echo "
+                </select>
             </p>
             <p>
-                <label for="start_date"> Start Date: </label>
-                <input type="date" id="start_date" name="start_date" value="2023-01-01" required>
+                <label for=\"start_date\"> Start Date: </label>
+                <input type=\"date\" id=\"start_date\" name=\"start_date\" value=\"2023-01-01\" required>
             </p>
             <p>
-                <label for="end_date"> End Date: </label>
-                <input type="date" id="end_date" name="end_date" value="2023-01-01" required>
+                <label for=\"end_date\"> End Date: </label>
+                <input type=\"date\" id=\"end_date\" name=\"end_date\" value=\"2023-01-01\" required>
             </p>
             <p>
-                <input type="submit" name="submit" value="Submit">
+                <input type=\"submit\" name=\"submit\" value=\"Submit\">
             </p>
-        </form>
+        </form>\n";
+                }
+
+                // Free result set
+                mysqli_free_result($retval);
+            }
+
+            // Close connection
+            mysqli_close($mysqli);
+        ?>
     </body>
 </html>

@@ -9,7 +9,7 @@
         <!-- Database project title -->
         <h1> <a href="index.html">Motion Sense</a> </h1>
         <!-- Page Title -->
-        <h3> All Plan Join View </h3>
+        <h3> <a href="all_plan_join_view.php">All Plan Join View</a> </h3>
         <!-- Author -->
         <p>
             <b>Author:</b> Peter Thompson
