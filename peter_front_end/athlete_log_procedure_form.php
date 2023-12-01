@@ -32,7 +32,7 @@
         </p>
         <ul>
             <li>
-                Athlete <b>1</b> from <b>2023-01-01</b> to <b>2023-01-05</b>.
+                Athlete <b>Andrea Adams</b> from <b>2023-01-01</b> to <b>2023-01-05</b>.
                 <ul>
                     <li>
                         This should return two rows, each of which is for a workout called "Run".
@@ -45,7 +45,7 @@
                 </ul>
             </li>
             <li>
-                Athlete <b>2</b> from <b>2023-02-02</b> to <b>2023-02-02</b>.
+                Athlete <b>Aaron Anderson</b> from <b>2023-02-02</b> to <b>2023-02-02</b>.
                 <ul>
                     <li>
                         This should return four rows, each of which is for a workout called
@@ -59,18 +59,60 @@
             </li>
         </ul>
         <!-- Form -->
-        <form action="athlete_log_procedure.php" method="post">
+        <form action="athlete_log_procedure_results.php" method="post">
             <p>
-                <label for="ath_id"> Athlete ID: </label>
-                <input type="text" id="ath_id" name="ath_id" placeholder="whole number" pattern="[0-9]+" required>
+                <?php
+                    // Credientials
+                    require_once "/home/SOU/thompsop1/final_db_config.php";
+
+                    // Turn error reporting on
+                    error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+                    ini_set("display_errors", "1");
+
+                    // Create connection using procedural interface
+                    $mysqli = mysqli_connect($hostname,$username,$password,$schema);
+
+                    // Check connection
+                    if (!$mysqli) {
+                        echo "<em>There was an error connecting to the database.</em>\n";
+                    } else {
+                        // Build query string
+                        $sql = "SELECT athID, athFirstName, athLastName FROM athlete";
+                        // Execute query using the connection created above
+                        $retval = mysqli_query($mysqli, $sql);
+
+                        // Display the results
+                        if (mysqli_num_rows($retval) > 0) {
+                            // Label for the athlete selection field
+                            echo "<label for=\"ath_id\"> Athlete: </label>\n";
+                            // Start of selection field
+                            echo "<select id=\"ath_id\" name=\"ath_id\" required>\n";
+                            // Show each row
+                            while ($row = mysqli_fetch_assoc($retval)) {
+                                echo "<option value=\"" . $row["athID"] . "\">" . $row["athFirstName"] . " " . $row["athLastName"] . "</option>\n";
+                            }
+                            // End the selection field
+                            echo "</select>\n";
+                        // No results
+                        } else {
+                            echo "<em>No athletes found in database.</em>\n";
+                        }
+
+                        // Free result set
+                        mysqli_free_result($retval);
+                    }
+
+                    // Close connection
+                    mysqli_close($mysqli);
+                ?>
             </p>
             <p>
                 <label for="start_date"> Start Date: </label>
-                <input type="text" id="start_date" name="start_date" placeholder="YYYY-MM-DD" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" required>
+                <input type="date" id="start_date" name="start_date" value="2023-01-01" required>
             </p>
             <p>
                 <label for="end_date"> End Date: </label>
-                <input type="text" id="end_date" name="end_date" placeholder="YYYY-MM-DD" pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}" required>
+                <input type="date" id="end_date" name="end_date" value="2023-01-01" required>
             </p>
             <p>
                 <input type="submit" name="submit" value="Submit">
