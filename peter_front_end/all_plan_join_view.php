@@ -38,6 +38,9 @@
             columns which the strengthPlan table does not have, and vice versa.)
         </p>
         <!-- Query Results -->
+        <p>
+            <b>Query Results:</b>
+        </p>
         <?php
             // Credientials
             require_once "/home/SOU/thompsop1/final_db_config.php";

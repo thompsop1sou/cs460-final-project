@@ -43,10 +43,7 @@ FROM strengthPlan;
 -- Note: Started with tables lower in the hierarchy, then right-joined them to tables higher up.
 -- Note: This assumes the query above is already saved as a view called exercisePlanUnion.
 
-SELECT wrkPlanID, athID, wrkPlanName, wrkPlanStartDate, wrkPlanEndDate, wrkPlanSchedule,
-	exrName, exrType, exrPlanNotes,
-	cdoPlanSets, cdoPlanDistance, cdoPlanDuration,
-    strPlanSets, strPlanReps, strPlanWeight
+SELECT *
 FROM exercisePlanUnion
     RIGHT JOIN exercisePlan USING (exrPlanID)
     RIGHT JOIN exercise USING(exrID)
@@ -96,10 +93,7 @@ FROM strengthLog;
 -- Putting them all together (where each of them has been saved as a view)
 -- This one will be saved as a view called allLogJoin
 
-SELECT wrkLogID, athID, wrkPlanID, wrkPlanName, wrkLogDate,
-	exrName, exrType, exrLogNotes,
-    cdoLogSets, cdoLogDistance, cdoLogDuration,
-    strLogSets, strLogReps, strLogWeight
+SELECT *
 FROM exerciseLogUnion
     RIGHT JOIN exerciseLogPlanJoin USING(exrLogID)
     RIGHT JOIN workoutLogPlanJoin USING(wrkLogID);

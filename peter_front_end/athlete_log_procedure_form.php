@@ -59,6 +59,9 @@
             </li>
         </ul>
         <!-- Form -->
+        <p>
+            <b>Input Form:</b>
+        </p>
         <?php
             // Credientials
             require_once "/home/SOU/thompsop1/final_db_config.php";

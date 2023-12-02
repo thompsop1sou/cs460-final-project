@@ -75,7 +75,10 @@
                 </ul>
             </li>
         </ul>
-        <!-- Form -->
+        <!-- Forms -->
+        <p>
+            <b>Input Form (Plan Function):</b>
+        </p>
         <?php
             // Credientials
             require_once "/home/SOU/thompsop1/final_db_config.php";
@@ -91,8 +94,6 @@
             if (!$mysqli) {
                 echo "<p><em>There was an error connecting to the database.</em></p>\n";
             } else {
-                /************ FORM FOR PLAN FUNCTION ************/
-
                 // Build query string
                 $sql = "SELECT exrPlanID FROM cardioPlan";
                 // Execute query using the connection created above
@@ -121,16 +122,36 @@
                 </select>
             </p>
             <p>
-                <input type=\"submit\" name=\"submit_plan\" value=\"Get Plan Speed\">
+                <input type=\"submit\" name=\"submit_plan\" value=\"Submit\">
             </p>
         </form>\n";
                 }
 
                 // Free result set
                 mysqli_free_result($retval);
+            }
 
-                /************ FORM FOR LOG FUNCTION ************/
+            // Close connection
+            mysqli_close($mysqli);
+        ?>
+        <p>
+            <b>Input Form (Log Function):</b>
+        </p>
+        <?php
+            // Credientials
+            require_once "/home/SOU/thompsop1/final_db_config.php";
 
+            // Turn error reporting on
+            error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
+            ini_set("display_errors", "1");
+
+            // Create connection using procedural interface
+            $mysqli = mysqli_connect($hostname,$username,$password,$schema);
+
+            // Check connection
+            if (!$mysqli) {
+                echo "<p><em>There was an error connecting to the database.</em></p>\n";
+            } else {
                 // Build query string
                 $sql = "SELECT exrLogID FROM cardioLog";
                 // Execute query using the connection created above
@@ -159,7 +180,7 @@
                 </select>
             </p>
             <p>
-                <input type=\"submit\" name=\"submit_log\" value=\"Get Log Speed\">
+                <input type=\"submit\" name=\"submit_log\" value=\"Submit\">
             </p>
         </form>\n";
                 }
