@@ -37,10 +37,7 @@
             the cdoPlanSets column. This is a result of the fact that the cardioPlan table has
             columns which the strengthPlan table does not have, and vice versa.)
         </p>
-        <!-- Query Results -->
-        <p>
-            <b>Query Results:</b>
-        </p>
+        <!-- Form/Query -->
         <?php
             // Credientials
             require_once "/home/SOU/thompsop1/final_db_config.php";
@@ -49,46 +46,56 @@
             error_reporting(E_ERROR | E_WARNING | E_PARSE | E_NOTICE);
             ini_set("display_errors", "1");
 
-                // Create connection using procedural interface
+            // Create connection using procedural interface
             $mysqli = mysqli_connect($hostname,$username,$password,$schema);
 
-            // Check connection
-            if (!$mysqli) {
-                echo "<p> <em>There was an error connecting to the database.</em> <p>";
-            } else {
+            // Connection failed
+            if (!$mysqli)
+            {
+                echo "<p> <em>There was an error connecting to the database.</em> <p>\n";
+            }
+            // Connection succeeded
+            else
+            {
+                echo "<p> <b>Query Results:</b> </p>\n";
+
                 // Build query string
                 $sql = "SELECT wrkPlanName, exrName, exrType, exrPlanNotes, cdoPlanSets, strPlanSets FROM allPlanJoin";  
                 // Execute query using the connection created above
                 $retval = mysqli_query($mysqli, $sql);
 
                 // Display the results
-                if (mysqli_num_rows($retval) > 0) {
+                if (mysqli_num_rows($retval) > 0)
+                {
                     // Start the table
-                    echo "<table>" .
-                        "<tr>" .
-                        "<th>wrkPlanName</th>" .
-                        "<th>exrName</th>" .
-                        "<th>exrType</th>" .
-                        "<th>exrPlanNotes</th>" .
-                        "<th>cdoPlanSets</th>" .
-                        "<th>strPlanSets</th>" .
-                        "<tr>";
+                    echo "<table>\n" .
+                        "<tr>\n" .
+                        "<th>wrkPlanName</th>\n" .
+                        "<th>exrName</th>\n" .
+                        "<th>exrType</th>\n" .
+                        "<th>exrPlanNotes</th>\n" .
+                        "<th>cdoPlanSets</th>\n" .
+                        "<th>strPlanSets</th>\n" .
+                        "<tr>\n";
                     // Show each row
-                    while ($row = mysqli_fetch_assoc($retval)) {
-                        echo "<tr>" .
-                            "<td>" . ($row["wrkPlanName"] ?? "NULL") . "</td>" .
-                            "<td>" . ($row["exrName"] ?? "NULL") . "</td>" .
-                            "<td>" . ($row["exrType"] ?? "NULL") . "</td>" .
-                            "<td>" . ($row["exrPlanNotes"] ?? "NULL") . "</td>" .
-                            "<td>" . ($row["cdoPlanSets"] ?? "NULL") . "</td>" .
-                            "<td>" . ($row["strPlanSets"]  ?? "NULL") . "</td>" .
-                            "</tr>";
+                    while ($row = mysqli_fetch_assoc($retval))
+                    {
+                        echo "<tr>\n" .
+                            "<td>" . ($row["wrkPlanName"] ?? "NULL") . "</td>\n" .
+                            "<td>" . ($row["exrName"] ?? "NULL") . "</td>\n" .
+                            "<td>" . ($row["exrType"] ?? "NULL") . "</td>\n" .
+                            "<td>" . ($row["exrPlanNotes"] ?? "NULL") . "</td>\n" .
+                            "<td>" . ($row["cdoPlanSets"] ?? "NULL") . "</td>\n" .
+                            "<td>" . ($row["strPlanSets"]  ?? "NULL") . "</td>\n" .
+                            "</tr>\n";
                     }
                     // End the table
-                    echo "</table>";
+                    echo "</table>\n";
+                }
                 // No results
-                } else {
-                    echo "<p> <em>No results in view.</em> <p>";
+                else
+                {
+                    echo "<p> <em>No results in view.</em> <p>\n";
                 }
 
                 // Free result set

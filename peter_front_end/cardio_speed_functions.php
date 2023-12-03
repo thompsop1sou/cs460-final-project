@@ -9,7 +9,7 @@
         <!-- Database project title -->
         <h1> <a href="index.html">Motion Sense</a> </h1>
         <!-- Page Title -->
-        <h3> <a href="cardio_speed_functions_form.php">Cardio Speed Functions</a> </h3>
+        <h3> <a href="cardio_speed_functions.php">Cardio Speed Functions</a> </h3>
                 <!-- Author -->
                 <p>
             <b>Author:</b> Peter Thompson
@@ -76,10 +76,52 @@
             </li>
         </ul>
         <!-- Query Results -->
-        <p>
-            <b>Query Results:</b>
-        </p>
         <?php
+            // Function to generate forms (used twice below)
+            function generate_cardio_form($mysqli, $type)
+            {
+                // Form title
+                echo "<p> <b>Input Form (" . $type . " Function):</b> </p>\n";
+
+                // Build query string
+                $sql = "SELECT exr" . $type . "ID FROM cardio" . $type;
+                // Execute query using the connection created above
+                $retval = mysqli_query($mysqli, $sql);
+
+                // No results
+                if (!(mysqli_num_rows($retval) > 0))
+                {
+                    echo "<p><em>No cardio " . strtolower($type) . "s found in database.</em></p>\n";
+                }
+                // Some results
+                else
+                {
+                    // Start of the form
+                    echo "<form action=\"cardio_speed_functions.php\" method=\"post\">\n" .
+                        "<p>\n" .
+                        "<label for=\"cdo_" . strtolower($type) . "_id\"> Cardio " . $type . " ID: </label>\n" .
+                        "<select id=\"cdo_" . strtolower($type) . "_id\" name=\"cdo_" . strtolower($type) . "_id\" required>\n";
+
+                    // Add each cardio plan to the select field
+                    while ($row = mysqli_fetch_assoc($retval))
+                    {
+                        echo "<option value=\"" . $row["exr" . $type . "ID"] . "\">" . $row["exr" . $type . "ID"] . "</option>\n";
+                    }
+
+                    // End of the form
+                    echo "</select>\n" .
+                        "</p>\n" .
+                        "<p>\n" .
+                        "<input type=\"submit\" name=\"submit_" . strtolower($type) . "\" value=\"Submit\">\n" .
+                        "</p>\n" .
+                        "</form>\n";
+                }
+
+                // Free result set
+                mysqli_free_result($retval);
+
+            }
+
             // Credientials
             require_once "/home/SOU/thompsop1/final_db_config.php";
 
@@ -90,12 +132,19 @@
             // Create connection using procedural interface
             $mysqli = mysqli_connect($hostname,$username,$password,$schema);
 
-            // Check connection
-            if (!$mysqli) {
-                echo "<p> <em>There was an error connecting to the database.</em> <p>";
-            } else {
-                // Want to call plan function
-                if (isset($_POST["submit_plan"])) {
+            // Connection failed
+            if (!$mysqli)
+            {
+                echo "<p> <em>There was an error connecting to the database.</em> <p>\n";
+            }
+            // Connection succeeded
+            else
+            {
+                // Plan form already submitted, display the results
+                if (isset($_POST["submit_plan"]))
+                {
+                    echo "<p> <b>Query Results:</b> </p>\n";
+
                     // Label for the results
                     echo "<p>Results for cardio plan with ID <b>" . $_POST["cdo_plan_id"] . "</b>:</p>";
 
@@ -105,7 +154,8 @@
                     $retval = mysqli_query($mysqli, $sql);
 
                     // Display the results
-                    if (mysqli_num_rows($retval) > 0) {
+                    if (mysqli_num_rows($retval) > 0)
+                    {
                         // Start the table
                         echo "<table>" .
                             "<tr>" .
@@ -114,7 +164,8 @@
                             "<th>cdoPlanSpeed</th>" .
                             "<tr>";
                         // Show each row
-                        while ($row = mysqli_fetch_assoc($retval)) {
+                        while ($row = mysqli_fetch_assoc($retval))
+                        {
                             echo "<tr>" .
                                 "<td>" . ($row["cdoPlanDistance"] ?? "NULL") . "</td>" .
                                 "<td>" . ($row["cdoPlanDuration"] ?? "NULL") . "</td>" .
@@ -123,15 +174,21 @@
                         }
                         // End the table
                         echo "</table>";
+                    }
                     // No results
-                    } else {
+                    else
+                    {
                         echo "<p> <em>No results returned.</em> <p>";
                     }
 
                     // Free result set
                     mysqli_free_result($retval);
-                // Want to call log function
-                } elseif (isset($_POST["submit_log"])) {
+                }
+                // Log form already submitted, display the results
+                elseif (isset($_POST["submit_log"]))
+                {
+                    echo "<p> <b>Query Results:</b> </p>\n";
+
                     // Label for the results
                     echo "<p>Results for cardio log with ID <b>" . $_POST["cdo_log_id"] . "</b>:</p>";
 
@@ -141,7 +198,8 @@
                     $retval = mysqli_query($mysqli, $sql);
 
                     // Display the results
-                    if (mysqli_num_rows($retval) > 0) {
+                    if (mysqli_num_rows($retval) > 0)
+                    {
                         // Start the table
                         echo "<table>" .
                             "<tr>" .
@@ -150,7 +208,8 @@
                             "<th>cdoLogSpeed</th>" .
                             "<tr>";
                         // Show each row
-                        while ($row = mysqli_fetch_assoc($retval)) {
+                        while ($row = mysqli_fetch_assoc($retval))
+                        {
                             echo "<tr>" .
                                 "<td>" . ($row["cdoLogDistance"] ?? "NULL") . "</td>" .
                                 "<td>" . ($row["cdoLogDuration"] ?? "NULL") . "</td>" .
@@ -159,16 +218,24 @@
                         }
                         // End the table
                         echo "</table>";
+                    }
                     // No results
-                    } else {
+                    else
+                    {
                         echo "<p> <em>No results returned.</em> <p>";
                     }
 
                     // Free result set
                     mysqli_free_result($retval);
-                // Form was not submitted
-                } else {
-                    echo "<p> <em>No form data submitted.</em> <p>";
+                }
+                // Form not yet submitted, display the forms
+                else
+                {
+                    // Plans form
+                    generate_cardio_form($mysqli, "Plan");
+
+                    // Logs form
+                    generate_cardio_form($mysqli, "Log");
                 }
             }
 
