@@ -69,10 +69,10 @@
             ini_set("display_errors", "1");
 
             // Create connection using procedural interface
-            $mysqli = mysqli_connect($hostname,$username,$password,$schema);
+            $connection = new mysqli($hostname, $username, $password, $schema);
 
             // Connection failed
-            if (!$mysqli)
+            if ($connection->connect_error)
             {
                 echo "<p> <em>There was an error connecting to the database.</em> <p>\n";
             }
@@ -87,13 +87,15 @@
                     // Label for the results
                     echo "<p>Results for athlete <b>" . $_POST["ath_id"] . "</b> from <b>" . $_POST["start_date"] . "</b> to <b>" . $_POST["end_date"] . "</b>:</p>\n";
 
-                    // Build query string
-                    $sql = "CALL athleteLogProcedure(" . $_POST["ath_id"] . ", '" . $_POST["start_date"] . "', '" . $_POST["end_date"] . "')";
+                    // Build prepared statement
+                    $prepared = $connection->prepare("CALL athleteLogProcedure(?, ?, ?)");
+                    $prepared->bind_param("iss", $_POST["ath_id"], $_POST["start_date"], $_POST["end_date"]);
                     // Execute query using the connection created above
-                    $retval = mysqli_query($mysqli, $sql);
+                    $prepared->execute();
+                    $results = $prepared->get_result();
 
                     // Display the results
-                    if (mysqli_num_rows($retval) > 0) {
+                    if ($results->num_rows > 0) {
                         // Start the table
                         echo "<table>\n" .
                             "<tr>\n" .
@@ -106,7 +108,7 @@
                             "<th>strLogSets</th>\n" .
                             "<tr>\n";
                         // Show each row
-                        while ($row = mysqli_fetch_assoc($retval)) {
+                        while ($row = $results->fetch_assoc()) {
                             echo "<tr>\n" .
                                 "<td>" . ($row["wrkPlanName"] ?? "NULL") . "</td>\n" .
                                 "<td>" . ($row["wrkLogDate"] ?? "NULL") . "</td>\n" .
@@ -125,7 +127,7 @@
                     }
 
                     // Free result set
-                    mysqli_free_result($retval);
+                    $results->free_result();
                 }
                 // Form not yet submitted, display the form
                 else
@@ -133,26 +135,24 @@
                     echo "<p> <b>Input Form:</b> </p>\n";
 
                     // Build query string
-                    $sql = "SELECT athID, athFirstName, athLastName FROM athlete";
+                    $query = "SELECT athID, athFirstName, athLastName FROM athlete";
                     // Execute query using the connection created above
-                    $retval = mysqli_query($mysqli, $sql);
-    
-                    // No results
-                    if (!(mysqli_num_rows($retval) > 0)) {
-                        echo "<p><em>No athletes found in database.</em></p>\n";
-                    // Some results
-                    } else {
+                    $results = $connection->query($query);
+
+                    // Display the results
+                    if ($results->num_rows > 0)
+                    {
                         // Start of the form
                         echo "<form action=\"athlete_log_procedure.php\" method=\"post\">\n" .
                             "<p>\n" .
                             "<label for=\"ath_id\"> Athlete: </label>\n" .
                             "<select id=\"ath_id\" name=\"ath_id\" required>\n";
-    
+
                         // Add each athlete to the select field
-                        while ($row = mysqli_fetch_assoc($retval)) {
+                        while ($row = $results->fetch_assoc()) {
                             echo "<option value=\"" . $row["athID"] . "\">" . $row["athFirstName"] . " " . $row["athLastName"] . " (ID " . $row["athID"] . ")</option>\n";
                         }
-    
+
                         // End of the form
                         echo "</select>\n" .
                             "</p>\n" .
@@ -169,14 +169,19 @@
                             "</p>\n" .
                             "</form>\n";
                     }
-    
+                    // No results
+                    else
+                    {
+                        echo "<p> <em>No athletes found in database.</em> </p>\n";
+                    }
+
                     // Free result set
-                    mysqli_free_result($retval);
+                    $results->free_result();
                 }
             }
 
             // Close connection
-            mysqli_close($mysqli);
+            $connection->close();
         ?>
     </body>
 </html>

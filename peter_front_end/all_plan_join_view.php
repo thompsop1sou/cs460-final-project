@@ -47,10 +47,10 @@
             ini_set("display_errors", "1");
 
             // Create connection using procedural interface
-            $mysqli = mysqli_connect($hostname,$username,$password,$schema);
+            $connection = new mysqli($hostname, $username, $password, $schema);
 
             // Connection failed
-            if (!$mysqli)
+            if ($connection->connect_error)
             {
                 echo "<p> <em>There was an error connecting to the database.</em> <p>\n";
             }
@@ -60,12 +60,12 @@
                 echo "<p> <b>Query Results:</b> </p>\n";
 
                 // Build query string
-                $sql = "SELECT wrkPlanName, exrName, exrType, exrPlanNotes, cdoPlanSets, strPlanSets FROM allPlanJoin";  
+                $query = "SELECT wrkPlanName, exrName, exrType, exrPlanNotes, cdoPlanSets, strPlanSets FROM allPlanJoin";  
                 // Execute query using the connection created above
-                $retval = mysqli_query($mysqli, $sql);
+                $results = $connection->query($query);
 
                 // Display the results
-                if (mysqli_num_rows($retval) > 0)
+                if ($results->num_rows > 0)
                 {
                     // Start the table
                     echo "<table>\n" .
@@ -78,7 +78,7 @@
                         "<th>strPlanSets</th>\n" .
                         "<tr>\n";
                     // Show each row
-                    while ($row = mysqli_fetch_assoc($retval))
+                    while ($row = $results->fetch_assoc())
                     {
                         echo "<tr>\n" .
                             "<td>" . ($row["wrkPlanName"] ?? "NULL") . "</td>\n" .
@@ -99,11 +99,11 @@
                 }
 
                 // Free result set
-                mysqli_free_result($retval);
+                $results->free_result();
             }
 
             // Close connection
-            mysqli_close($mysqli);
+            $connection->close();
         ?>
     </body>
 </html>
