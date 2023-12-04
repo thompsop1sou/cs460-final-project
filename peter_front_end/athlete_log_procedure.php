@@ -90,7 +90,7 @@
                     // Build prepared statement
                     $prepared = $connection->prepare("CALL athleteLogProcedure(?, ?, ?)");
                     $prepared->bind_param("iss", $_POST["ath_id"], $_POST["start_date"], $_POST["end_date"]);
-                    // Execute query using the connection created above
+                    // Execute prepared statement using the connection created above
                     $prepared->execute();
                     $results = $prepared->get_result();
 
