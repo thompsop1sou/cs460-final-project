@@ -18,28 +18,8 @@ cdoPlanSets column. This is a result of the fact that the cardioPlan table has c
 strengthPlan table does not have, and vice versa.)
 */
 
--- Taking a look at individual tables
-
-SELECT * FROM exercise;
-SELECT * FROM workoutPlan;
-SELECT * FROM exercisePlan;
-SELECT * FROM cardioPlan;
-SELECT * FROM strengthPlan;
-
--- Joining workoutPlan and exercisePlan
-
-SELECT * FROM exercisePlan RIGHT JOIN workoutPlan USING(wrkPlanID);
-
--- Joining workoutPlan, exercisePlan, and exercise
-
-SELECT * FROM exercisePlan RIGHT JOIN exercise USING(exrID) RIGHT JOIN workoutPlan USING(wrkPlanID);
-
-SELECT wrkPlanID, athID, wrkPlanName, wrkPlanStartDate, wrkPlanEndDate, wrkPlanSchedule, exrName, exrType, exrPlanNotes
-FROM exercisePlan RIGHT JOIN exercise USING(exrID) RIGHT JOIN workoutPlan USING(wrkPlanID);
-
--- Do I need to include info from cardioPlan and strengthPlan? There will be null values, which could be okay.
--- I could use this as a subquery in the main query, but it might be easier to save this as its own view instead.
--- Decided to save as a view called exercisePlanUnion.
+-- Union of cardioLog and strengthLog
+-- Saved as a view called exercisePlanUnion
 
 SELECT cardioPlan.exrPlanID,
 	cdoPlanSets, cdoPlanDistance, cdoPlanDuration,
@@ -51,7 +31,8 @@ SELECT strengthPlan.exrPlanID,
 	strPlanSets, strPlanReps, strPlanWeight
 FROM strengthPlan;
 
--- Final SELECT statement with workoutPlan, exercise, exercisePlan, cardioPlan, and strengthPlan tables
+-- Joining all the plan tables together
+-- Saved as the allPlanJoin view
 -- Note: Started with tables lower in the hierarchy, then right-joined them to tables higher up.
 
 SELECT *
@@ -263,11 +244,6 @@ END
 */
 
 -- Testing insert trigger
-
-SELECT * FROM exercisePlan LEFT JOIN exercise USING(exrID);
-SELECT * FROM workoutPlan;
-SELECT * FROM workoutLog;
-SELECT * FROM exerciseLog;
 
 START TRANSACTION;
 
