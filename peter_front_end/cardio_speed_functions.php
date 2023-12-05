@@ -78,6 +78,8 @@
         <!-- Query Results -->
         <?php
             // Function to generate forms (used twice below)
+            // $connection a mysqli object, the connection to the database
+            // $type is a string indicating whether the form is for a "Plan" or a "Log"
             function generate_cardio_form($connection, $type)
             {
                 // Form title
@@ -122,6 +124,8 @@
             }
 
             // Function to display speed results (used twice below)
+            // $connection a mysqli object, the connection to the database
+            // $type is a string indicating whether the results are for a "Plan" or a "Log"
             function display_speed_results($connection, $type)
             {
                 // Results title

@@ -64,15 +64,16 @@
         <!-- Form/Results -->
         <?php
             // Function to display log data (used twice below)
-            function display_log_data($mysqli)
+            // $connection a mysqli object, the connection to the database
+            function display_log_data($connection)
             {
                 // Build query string
-                $sql = "SELECT wrkPlanName, wrkLogDate, exrName, exrType, exrLogNotes FROM allLogJoin";
+                $query = "SELECT wrkPlanName, wrkLogDate, exrName, exrType, exrLogNotes FROM allLogJoin";
                 // Execute query using the connection created above
-                $retval = mysqli_query($mysqli, $sql);
+                $results = $connection->query($query);
 
                 // Display the results
-                if (mysqli_num_rows($retval) > 0)
+                if ($results->num_rows > 0)
                 {
                     // Start the table
                     echo "<table>\n" .
@@ -84,7 +85,7 @@
                         "<th>exrLogNotes</th>\n" .
                         "<tr>\n";
                     // Show each row
-                    while ($row = mysqli_fetch_assoc($retval))
+                    while ($row = $results->fetch_assoc())
                     {
                         echo "<tr>\n" .
                             "<td>" . ($row["wrkPlanName"] ?? "NULL") . "</td>\n" .
@@ -102,6 +103,9 @@
                 {
                     echo "<p> <em>No log results.</em> <p>\n";
                 }
+
+                // Free result set
+                $results->free_result();
             }
 
             // Credientials
@@ -112,10 +116,10 @@
             ini_set("display_errors", "1");
 
             // Create connection using procedural interface
-            $mysqli = mysqli_connect($hostname,$username,$password,$schema);
+            $connection = new mysqli($hostname, $username, $password, $schema);
 
             // Connection failed
-            if (!$mysqli)
+            if ($connection->connect_error)
             {
                 echo "<p> <em>There was an error connecting to the database.</em> <p>\n";
             }
@@ -128,33 +132,34 @@
                     echo "<p> <b>Query Results:</b> </p>\n";
 
                     // Turn off autocommit
-                    mysqli_autocommit($mysqli, false);
+                    $connection->autocommit(false);
 
                     // Display log data before update/insert
                     echo "<p> Original log data: </p>\n";
-                    display_log_data($mysqli);
+                    display_log_data($connection);
 
                     // Attempt to insert the new data
                     try
                     {
                         // Attempt to create new entry in exerciseLog table
-                        $sql = "INSERT INTO exerciseLog (exrLogID, wrkLogID, exrPlanID, exrLogNotes) VALUES (NULL, " . $_POST["wrk_log_id"] . ", " . $_POST["exr_plan_id"] . ", '" . $_POST["exr_log_notes"] . "')";
-                        mysqli_query($mysqli, $sql);
+                        $prepared = $connection->prepare("INSERT INTO exerciseLog (exrLogID, wrkLogID, exrPlanID, exrLogNotes) VALUES (NULL, ?, ?, ?)");
+                        $prepared->bind_param("iis", $_POST["wrk_log_id"], $_POST["exr_plan_id"], $_POST["exr_log_notes"]);
+                        $prepared->execute();
                         // If no error, indicate success
                         echo "<p> Insert succeeded! </p>\n";
                     }
                     // The insert failed
                     catch (mysqli_sql_exception $e)
                     {
-                        echo "<p> Insert failed: " . mysqli_error($mysqli) . " </p>\n";
+                        echo "<p> Insert failed: " . $connection->error . " </p>\n";
                     }
 
                     // Display log data after update/insert
                     echo "<p> Changed log data: </p>\n";
-                    display_log_data($mysqli);
+                    display_log_data($connection);
 
                     // Rollback any changes
-                    mysqli_rollback($mysqli);
+                    $connection->rollback();
                 }
                 // Form not yet submitted, display the form
                 else
@@ -163,19 +168,19 @@
                     echo "<p> <b>Input Form (Insert Trigger):</b> </p>\n";
 
                     // Build query string A
-                    $sql_a = "SELECT wrkLogID, wrkPlanID, wrkLogDate FROM workoutLog";
+                    $query_a = "SELECT wrkLogID, wrkPlanID, wrkLogDate FROM workoutLog";
                     // Execute query A using the connection created above
-                    $retval_a = mysqli_query($mysqli, $sql_a);
+                    $results_a = $connection->query($query_a);
 
                     // Build query string B
-                    $sql_b = "SELECT wrkPlanID, exrName, exrPlanID FROM allPlanJoin";
+                    $query_b = "SELECT wrkPlanID, exrName, exrPlanID FROM allPlanJoin";
                     // Execute query B using the connection created above
-                    $retval_b = mysqli_query($mysqli, $sql_b);
+                    $results_b = $connection->query($query_b);
 
                     // No results in one of the queries
-                    if (!(mysqli_num_rows($retval_a) > 0) || !(mysqli_num_rows($retval_b) > 0))
+                    if (!($results_a->num_rows > 0) || !($results_b->num_rows > 0))
                     {
-                        echo "<p><em>No workouts found in database.</em></p>\n";
+                        echo "<p> <em>No workouts found in database.</em> </p>\n";
                     }
                     // Some results in both queries
                     else
@@ -187,7 +192,7 @@
                             "<select id=\"wrk_log_id\" name=\"wrk_log_id\" required>\n";
 
                         // Add each workout log to the select field
-                        while ($row = mysqli_fetch_assoc($retval_a)) {
+                        while ($row = $results_a->fetch_assoc()) {
                             echo "<option value=\"" . $row["wrkLogID"] . "\">" . $row["wrkLogDate"] . " (wrkLogID " . $row["wrkLogID"] . ", ref. wrkPlanID " . $row["wrkPlanID"] . ")</option>\n";
                         }
 
@@ -199,7 +204,7 @@
                             "<select id=\"exr_plan_id\" name=\"exr_plan_id\" required>\n";
 
                         // Add each exercise plan to the select field
-                        while ($row = mysqli_fetch_assoc($retval_b))
+                        while ($row = $results_b->fetch_assoc())
                         {
                             echo "<option value=\"" . $row["exrPlanID"] . "\">" . $row["exrName"] . " (exrPlanID " . $row["exrPlanID"] . ", ref. wrkPlanID " . $row["wrkPlanID"] . ")</option>\n";
                         }
@@ -218,23 +223,24 @@
                     }
 
                     // Free result sets
-                    mysqli_free_result($retval_a);
-                    mysqli_free_result($retval_b);
+                    mysqli_free_result($results_a);
+                    mysqli_free_result($results_b);
 
                     // Update form
                     echo "<p>\n" .
-                        "<b>Input Form (Update Trigger):</b> Not shown due to the complexities\n" .
-                        "involved in updating the data. In this case, not only is each exercise\n" .
-                        "log connected to a workout log and a workout plan, but it is also\n" .
-                        "connected to either a cardio log or a strength log. There is currently\n" .
-                        "no way to ensure updating the data does not mess up that relationship.\n" .
-                        "(This isn't a problem when creating new data in an insert.)\n" .
+                        "<b>Input Form (Update Trigger):</b> Not demonstrated on the front end\n" .
+                        "due to the complexities involved in updating the data. In this case,\n" .
+                        "not only is each exercise log connected to a workout log and a\n" .
+                        "workout plan, but it is also connected to either a cardio log or a\n" .
+                        "strength log. There is currently no way to ensure updating the data\n" .
+                        "does not mess up that relationship. (This isn't a problem when\n" .
+                        "creating new data in an insert.)\n" .
                         "</p>\n";
                 }
             }
 
             // Close connection
-            mysqli_close($mysqli);
+            $connection->close();
         ?>
     </body>
 </html>
