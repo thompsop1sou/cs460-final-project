@@ -65,10 +65,10 @@
         <?php
             // Function to display log data (used twice below)
             // $connection a mysqli object, the connection to the database
-            function display_log_data($connection)
+            function display_log_data($connection, $new_exr_log_id = null)
             {
                 // Build query string
-                $query = "SELECT wrkPlanName, wrkLogDate, exrName, exrType, exrLogNotes FROM allLogJoin";
+                $query = "SELECT wrkPlanName, wrkLogDate, exrName, exrType, exrLogID, exrLogNotes FROM allLogJoin";
                 // Execute query using the connection created above
                 $results = $connection->query($query);
 
@@ -87,8 +87,18 @@
                     // Show each row
                     while ($row = $results->fetch_assoc())
                     {
-                        echo "<tr>\n" .
-                            "<td>" . ($row["wrkPlanName"] ?? "NULL") . "</td>\n" .
+                        // If it's the new entry, make it red
+                        if ($row["exrLogID"] == $new_exr_log_id)
+                        {
+                            echo "<tr class=\"highlight\">\n";
+                        }
+                        // Otherwise, just normal color
+                        else
+                        {
+                            echo "<tr>\n";
+                        }
+
+                        echo "<td>" . ($row["wrkPlanName"] ?? "NULL") . "</td>\n" .
                             "<td>" . ($row["wrkLogDate"] ?? "NULL") . "</td>\n" .
                             "<td>" . ($row["exrName"] ?? "NULL") . "</td>\n" .
                             "<td>" . ($row["exrType"] ?? "NULL") . "</td>\n" .
@@ -138,6 +148,9 @@
                     echo "<p> Original log data: </p>\n";
                     display_log_data($connection);
 
+                    // Declare variable that will hold the ID for the newly inserted row
+                    $new_exr_log_id = null;
+
                     // Attempt to insert the new data
                     try
                     {
@@ -145,6 +158,7 @@
                         $prepared = $connection->prepare("INSERT INTO exerciseLog (exrLogID, wrkLogID, exrPlanID, exrLogNotes) VALUES (NULL, ?, ?, ?)");
                         $prepared->bind_param("iis", $_POST["wrk_log_id"], $_POST["exr_plan_id"], $_POST["exr_log_notes"]);
                         $prepared->execute();
+                        $new_exr_log_id = $connection->insert_id;
                         // If no error, indicate success
                         echo "<p> Insert succeeded! </p>\n";
                     }
@@ -155,8 +169,8 @@
                     }
 
                     // Display log data after update/insert
-                    echo "<p> Changed log data: </p>\n";
-                    display_log_data($connection);
+                    echo "<p> Changed log data (new row is <span class=\"highlight\">highlighted</span>): </p>\n";
+                    display_log_data($connection, $new_exr_log_id);
 
                     // Rollback any changes
                     $connection->rollback();

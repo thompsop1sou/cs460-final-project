@@ -24,3 +24,7 @@ img {
     margin-right: auto;
     width: 400px;
 }
+
+.highlight {
+    background-color: yellow;
+}
