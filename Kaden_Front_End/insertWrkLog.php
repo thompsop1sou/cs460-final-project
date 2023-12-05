@@ -44,25 +44,25 @@ $dbconnect = mysqli_connect($hostname,$username,$password,$schema);
 if ($dbconnect->connect_error) {
   die("Database connection failed: " . $dbconnect->connect_error);
 }
-echo "Connected successfully... </br>";
 
 // Turn off autocommit
 mysqli_autocommit($dbconnect, false);
 
 if(isset($_POST['submit'])) {
-  $wrkLogID=$_POST['wrkLogID'];
-  $wrkPlanID=$_POST['wrkPlanID'];
-  $wrkLogDate=$_POST['wrkLogDate'];
-
-  $query = "INSERT INTO workoutLog (wrkLogID, wrkPlanID, wrkLogDate)
-  VALUES ($wrkLogID, $wrkPlanID, '$wrkLogDate')"; /*strings need single quotes, numbers don't */
-    if (!mysqli_query($dbconnect, $query)) {
-        printf('An error occurred. Your data has not been submitted.  ');
-        die("Error: " . $dbconnect->errno);
-    } else {
-      echo "Thanks for the update.";
-
-    }
+    // using prepare statement to prevent sql injection
+    $stmt = $dbconnect->prepare("INSERT INTO workoutLog (wrkLogID, wrkPlanID, wrkLogDate)
+    VALUES (NULL, ?, ?)")
+    or die($dbconnect->error);
+  
+    // getting data from post
+    $wrkPlanID=$_POST['wrkPlanID'];
+    $wrkLogDate=$_POST['wrkLogDate'];
+      
+    /* bind PHP variable with SQL parameter */
+    $stmt->bind_param('is', $wrkPlanID, $wrkLogDate); // 'is' is for int and string params
+  
+    // Execute query
+    $stmt->execute() or die($stmt->error);
 
     // build query
     $getWrkLogTbl = "select * from workoutLog"; // string needs quotes

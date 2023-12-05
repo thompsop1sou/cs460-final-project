@@ -21,6 +21,7 @@
 </tr>
 
 <h4><a href="/~thompsop1/motion_sense/index.html">Landing Page</a></h4>
+<h4><a href="/~barkerk/exerciseProgress.html">Check Another Exercise</a></h4>
 
 <?php
 // include credientals which should be stored outside your root directory (i.e. outside public_html)
@@ -39,17 +40,25 @@ if (mysqli_connect_errno()) {
     printf("Connection failed: " . mysqli_connect_errno());
     exit();
 }
-echo "Connected successfully  <br>  <br>";
 
 // if someone posts data 
 if(isset($_POST['submit'])) {
-	// get employee id value from post
+	// using prepare statement to prevent sql injection
+	$stmt = $mysqli->prepare("select exerciseProgress(?, ?) as progress")
+	  	or die($mysqli->error);
+
+	// get data value from post
 	$athID=$_POST['athID'];
     $i_exrName=$_POST['exrName'];
-	// build query
-  	$query = "select exerciseProgress($athID, '$i_exrName') as progress";; // string needs quotes
-  	// execute query
-  	$retval = mysqli_query($mysqli, $query); 
+
+	/* bind PHP variable with SQL parameter */
+	$stmt->bind_param('is', $athID, $i_exrName); // 'is' is for int and string params
+
+	// Execute query
+	$stmt->execute() or die($stmt->error);
+	$retval = $stmt->get_result(); // get result
+
+	
 	// if one or more rows were returned
 	if(mysqli_num_rows($retval) > 0){  
 		// while there is data to be fetched
@@ -57,7 +66,7 @@ if(isset($_POST['submit'])) {
 			// access data an build HTML table row
     		echo 
     	 		"
-    	  		<tr>
+    	  		<tr> 
     	  		<td>{$row['progress']}</td>  
    		  		</tr>\n";  
 		} // end while

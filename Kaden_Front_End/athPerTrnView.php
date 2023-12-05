@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-
+   
 </head>
 
 <body>
@@ -59,10 +59,15 @@ if (mysqli_connect_errno()) {
 echo "Connected successfully  <br>  <br>";
 
 
-// build query string
-$sql = 'SELECT * FROM athPerTrn';  
-// execute query using the connection created above
-$retval = mysqli_query($mysqli, $sql);  
+// build query string using prepare
+$stmt = $mysqli->prepare('select * from athPerTrn')
+	  	or die($mysqli->error);   
+
+/* execute the prepared statement */
+$stmt->execute() or die($mysqli->error);
+	
+/* get result set */
+$retval = $stmt->get_result();
 
 // if more than 0 rows were returned fetch each row and echo values of interest
 if(mysqli_num_rows($retval) > 0){  
