@@ -118,7 +118,7 @@ BEGIN
     -- Throw an error if the date entered is not valid and do not insert
     IF NEW.wrkLogDate NOT BETWEEN l_validStartDate and l_validEndDate then
 		SIGNAL SQLSTATE '45000'
-		SET MESSAGE_TEXT = 'Date Enter is invalid';
+		SET MESSAGE_TEXT = 'Date entered is not valid for this plan';
 	end if;
 	
 END$$
