@@ -49,6 +49,8 @@ if ($dbconnect->connect_error) {
 mysqli_autocommit($dbconnect, false);
 
 if(isset($_POST['submit'])) {
+
+  try {
     // using prepare statement to prevent sql injection
     $stmt = $dbconnect->prepare("INSERT INTO workoutLog (wrkLogID, wrkPlanID, wrkLogDate)
     VALUES (NULL, ?, ?)")
@@ -63,7 +65,11 @@ if(isset($_POST['submit'])) {
   
     // Execute query
     $stmt->execute() or die($stmt->error);
-
+  }
+  // insert fails
+  catch (mysqli_sql_exception $e){
+    echo "<p> Insert failed: " . $dbconnect->error . " </p>\n";
+  }
     // build query
     $getWrkLogTbl = "select * from workoutLog"; // string needs quotes
     // execute query
