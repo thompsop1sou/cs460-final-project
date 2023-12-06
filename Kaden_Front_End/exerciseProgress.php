@@ -85,7 +85,7 @@ if(isset($_POST['submit'])) {
 	
 	// if one or more rows were returned
 	if(mysqli_num_rows($retval) > 0){  
-
+		// create table
 		echo 
 		"<table border=\"1\" align=\"center\">
 		<tr> 

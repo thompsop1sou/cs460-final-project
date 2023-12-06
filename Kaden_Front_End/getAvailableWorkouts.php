@@ -13,17 +13,35 @@
 </head>
 
 <body>
+	<h2> Procedure Execution </h2>
+    <h4> Author: Kaden Barker </h4>
+    <p> This page provides an example interface to show that the availableWorkouts Procedure
+        is working correctly.
+    </p>
+    <h4 style="display:inline;"> Description: </h4>
+    <p style="display:inline;"> The available workouts procedure shows all workouts that an
+                                athletes trainer has provided based on a given time period.</p>
+    <br/>
+    <br/>
+    <h4 style="display:inline;"> Justification: </h4>
+    <p style="display:inline;"> It is common for trainers to provide different workouts for different 
+                                days of the week. That being said it is important for an athlete to be 
+                                able to view all the workouts for the time that they are searching for.
+                            </p>
+    <br/>
+    <br/>
+    <h4 style="display:inline;"> Execution Examples: </h4>
+    <p style="display:inline;"> In the real world the athlete would know their
+                                ID and be able to search for their workouts. In this representation try searching
+                                for an athletes workouts. If you set the ID to 1, the start date to 01-01-2023, and the end
+                                date to 02-01-2023. As you can see this will pull up any workouts that are available for athlete
+                                1 and in the provided time range. Another example to show that the procedure is working is to set the ID to 1, 
+                                the start date to 01-01-2023, and the end date to 01-10-2023. As you will see this now only shows the one 
+                                workout for athlete 1 that's in the time frame.</p>
 
-<table border="1" align="center">
-<tr>
 
-  <td>Workout ID </td>
-  <td>Athlete ID</td>
-  <td>Workout Name</td>
-  <td>Workout Start Date</td>
-  <td>Workout End Date</td>
-  <td>Workout Schedule</td>
-</tr>
+	<p>Please enter the following information for the athlete whose workouts you wish to view: </p>
+
 
 <?php
 // include credientals which should be stored outside your root directory (i.e. outside public_html)
@@ -63,6 +81,16 @@ if(isset($_POST['submit'])) {
 		
 	// if one or more rows were returned
 	if(mysqli_num_rows($retval) > 0){  
+		// create table
+		echo "<table border=\"1\" align=\"center\">
+		<tr>
+		<td>Workout ID </td>
+	    <td>Athlete ID</td>
+       	<td>Workout Name</td>
+		<td>Workout Start Date</td>
+		<td>Workout End Date</td>
+		<td>Workout Schedule</td>
+		</tr>\n";
 		// while there is data to be fetched
 		while($row = mysqli_fetch_assoc($retval)) {  
 			// access data an build HTML table row
@@ -77,12 +105,46 @@ if(isset($_POST['submit'])) {
                 <td>{$row['wrkPlanSchedule']}</td>
    		  		</tr>\n";  
 		} // end while
+
+		echo "</table>\n";
 	} else {  
 			echo "No results found";  
 	}
+
+	// free result set
+	mysqli_free_result($retval);
+
 }
-// free result set
-mysqli_free_result($retval);
+else {
+
+	// building query
+	$query = "SELECT athID from athlete";
+	// execute query
+	$results = $mysqli->query($query);
+
+	// show results
+	if ($results->num_rows > 0) {
+
+		echo "<form action=\"getAvailableWorkouts.php\" method=\"POST\">
+		<label for=\"athID\"> Athlete ID: </label>
+		<select id=\"athID\" name=\"athID\" required\n>";
+
+		//getting data for dropdown
+		while ($row = mysqli_fetch_assoc($results)) {
+			echo "<option value=\"" . $row["athID"] . "\">" .  $row["athID"] . "</option>\n";
+		}
+		echo "</select><br><br>";
+			
+	}
+	else {
+		echo "<p> No athletes in database </p>";
+	}
+
+	echo "Start Date: <input type=\"date\" name=\"i_startDate\"><br><br>";
+	echo "End Date: <input type=\"date\" name=\"i_endDate\"><br><br>";
+	echo "<input type=\"submit\" value=\"Submit\" name=\"submit\">";
+}
+
 //close connection
 mysqli_close($mysqli); 
 ?> <!-- signifiies the end of PHP code -->
