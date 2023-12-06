@@ -56,7 +56,6 @@ if (mysqli_connect_errno()) {
     printf("Connection failed: " . mysqli_connect_errno());
     exit();
 }
-echo "Connected successfully  <br>  <br>";
 
 
 // build query string using prepare
