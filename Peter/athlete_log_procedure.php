@@ -16,8 +16,8 @@
         </p>
         <!-- Description -->
         <p>
-            <b>Description:</b> This procedure returns a result set containing all of the logs for
-            a particular athlete during a particular date range.
+            <b>Description:</b> This procedure, <em>athleteLogProcedure</em>, returns a result set
+            containing all of the logs for a particular athlete during a particular date range.
         </p>
         <!-- Justification -->
         <p>

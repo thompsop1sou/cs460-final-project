@@ -16,8 +16,8 @@
         </p>
         <!-- Description -->
         <p>
-            <b>Description:</b> This view has all of the plan tables joined together by their
-            relevant IDs.
+            <b>Description:</b> This view, <em>allPlanJoin</em>, has all of the plan tables joined
+            together by their relevant IDs.
         </p>
         <!-- Justification -->
         <p>

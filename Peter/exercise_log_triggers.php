@@ -16,7 +16,8 @@
         </p>
         <!-- Description -->
         <p>
-            <b>Description:</b> These triggers ensure that data entered into the exerciseLog table
+            <b>Description:</b> These two triggers, <em>exerciseLog_BEFORE_INSERT</em> and
+            <em>exerciseLog_BEFORE_UPDATE</em>, ensure that data entered into the exerciseLog table
             is valid, which means that it refers to the same entry in the workoutPlan table whether
             you get there through the workoutLog table or through the exercisePlan table.
         </p>

@@ -16,9 +16,10 @@
         </p>
         <!-- Description -->
         <p>
-            <b>Description:</b> These two functions both calculate the average speed of a cardio
-            exercise, using the distance and duration associated with the exercise. One function is
-            for entries in the cardioPlan table; the other is for entries in the cardioLog table.
+            <b>Description:</b> These two functions, <em>cardioPlanSpeedFunction</em> and
+            <em>cardioLogSpeedFunction</em>, both calculate the average speed of a cardio exercise
+            using the distance and duration associated with the exercise. One function is for
+            entries in the cardioPlan table; the other is for entries in the cardioLog table.
         </p>
         <!-- Justification -->
         <p>
