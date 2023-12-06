@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <title> Motion Sense - Exercise Log Triggers </title>
-        <link rel="stylesheet" href="basic_style.css">
+        <link rel="stylesheet" href="style.css">
     </head>
     <body>
         <!-- Database project title -->
