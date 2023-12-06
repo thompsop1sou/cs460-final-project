@@ -13,15 +13,39 @@
 </head>
 
 <body>
+<h2> Function Execution </h2>
+    <h4> Author: Kaden Barker </h4>
+    <p> This page provides an example interface to show that the exerciseProgress function
+        is working correctly.
+    </p>
+    <h4 style="display:inline;"> Description: </h4>
+    <p style="display:inline;"> The exerciseProgress fuction is designed so that an athlete or trainer can
+                                search an exercise and see the progress that was made from their first time logging 
+                                the exercise to their last time.
+    </p>
+    <br/>
+    <br/>
+    <h4 style="display:inline;"> Justification: </h4>
+    <p style="display:inline;"> Athletes work with trainers to improve them selves or recover from injury. This is why it
+                                is important to have a way of seeing progress. If a trainer isn't seeing enough progress in their 
+                                athlete then the trainer knows that something isn't working. Similarly if an athlete isn't seeing 
+                                progress then they know that they may need to find a differnent trainer. That being said this function 
+                                returns progress for one exercise, however it could also be used in a procedure to generate a progress 
+                                report for everything an athlete does.
+                            </p>
+    <br/>
+    <br/>
+    <h4 style="display:inline;"> Execution Examples: </h4>
+    <p style="display:inline;"> An athlete that uses this system will know there Athlete ID just as most students know their student ID. They will 
+                                also know what exercises they have been doing. That being said try entering 1 for the Athlete ID and squat for the 
+                                Exercise Name. You will see that athlete 1 has increased by 10 since they started working with their trainer.
+                                Now try entering deadlift for the Exercise Name. You can now see that athlete 1 hasn't improved their deadlift yet.</p>
 
-<table border="1" align="center">
-<tr>
 
-  <td>Exercise Progress </td>
-</tr>
 
-<h4><a href="/~thompsop1/motion_sense/index.html">Landing Page</a></h4>
-<h4><a href="/~barkerk/exerciseProgress.html">Check Another Exercise</a></h4>
+	<p>Please enter the following information to see your progress: </p>
+
+
 
 <?php
 // include credientals which should be stored outside your root directory (i.e. outside public_html)
@@ -61,8 +85,15 @@ if(isset($_POST['submit'])) {
 	
 	// if one or more rows were returned
 	if(mysqli_num_rows($retval) > 0){  
+
+		echo 
+		"<table border=\"1\" align=\"center\">
+		<tr> 
+		<td>Exercise Progress </td>
+	    </tr>\n";
+
 		// while there is data to be fetched
-		while($row = mysqli_fetch_assoc($retval)) {  
+		while($row = $retval->fetch_assoc()) {  
 			// access data an build HTML table row
     		echo 
     	 		"
@@ -70,14 +101,47 @@ if(isset($_POST['submit'])) {
     	  		<td>{$row['progress']}</td>  
    		  		</tr>\n";  
 		} // end while
+
+		echo "</table>\n";
 	} else {  
 			echo "No results found";  
 	}
+	// free result set
+	mysqli_free_result($retval);
 }
-// free result set
-mysqli_free_result($retval);
+else { // nothing submitted yet
+
+	// building query
+	$query = "SELECT athID from athlete";
+	// execute query
+	$results = $mysqli->query($query);
+
+	// show results
+	if ($results->num_rows > 0) {
+
+		echo "<form action=\"exerciseProgress.php\" method=\"POST\">
+		<label for=\"athID\"> Athlete ID: </label>
+		<select id=\"athID\" name=\"athID\" required\n>";
+
+		//getting data for dropdown
+		while ($row = mysqli_fetch_assoc($results)) {
+			echo "<option value=\"" . $row["athID"] . "\">" .  $row["athID"] . "</option>\n";
+		}
+		echo "</select><br><br>";
+			
+	}
+	else {
+		echo "<p> No athletes in database </p>";
+	}
+	
+	echo "Exercise Name: <input type=\"text\" name=\"exrName\"><br><br>";
+	echo "<input type=\"submit\" name=\"submit\" value=\"Submit\">";
+	echo "</form>";
+}
 //close connection
 mysqli_close($mysqli); 
 ?> <!-- signifiies the end of PHP code -->
 </body>
+	<h4><a href="/~thompsop1/motion_sense/index.html">Landing Page</a></h4>
+	<h4><a href="/~barkerk/exerciseProgress.php">Check Another Exercise</a></h4>
 </html>
