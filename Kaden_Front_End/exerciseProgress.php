@@ -137,7 +137,12 @@ else { // nothing submitted yet
 	echo "Exercise Name: <input type=\"text\" name=\"exrName\"><br><br>";
 	echo "<input type=\"submit\" name=\"submit\" value=\"Submit\">";
 	echo "</form>";
+
+	// free result set
+	mysqli_free_result($results);
 }
+
+
 //close connection
 mysqli_close($mysqli); 
 ?> <!-- signifiies the end of PHP code -->
