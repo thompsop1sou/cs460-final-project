@@ -42,9 +42,6 @@
 
 
 
-	<p>Please enter the following information for the new Log: </p>
-
-
 <?php // signifies the start of PHP code
 /************
 //
@@ -131,6 +128,8 @@ if(isset($_POST['submit'])) {
 
 }
 else {
+
+  echo "<p>Please enter the following information for the new Log: </p>";
   // building query
 	$query = "SELECT wrkPlanID from workoutPlan order by wrkPlanID";
 	// execute query

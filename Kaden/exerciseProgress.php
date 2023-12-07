@@ -43,8 +43,6 @@
 
 
 
-	<p>Please enter the following information to see your progress: </p>
-
 
 
 <?php
@@ -110,6 +108,8 @@ if(isset($_POST['submit'])) {
 	mysqli_free_result($retval);
 }
 else { // nothing submitted yet
+
+	echo "<p>Please enter the following information to see your progress: </p>";
 
 	// building query
 	$query = "SELECT athID from athlete";

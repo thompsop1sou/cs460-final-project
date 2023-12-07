@@ -40,9 +40,6 @@
                                 workout for athlete 1 that's in the time frame.</p>
 
 
-	<p>Please enter the following information for the athlete whose workouts you wish to view: </p>
-
-
 <?php
 // include credientals which should be stored outside your root directory (i.e. outside public_html)
 // do NOT use '../' in file path
@@ -108,7 +105,8 @@ if(isset($_POST['submit'])) {
 
 		echo "</table>\n";
 	} else {  
-			echo "No results found";  
+			echo "<br><br>
+				No results found";  
 	}
 
 	// free result set
@@ -116,6 +114,8 @@ if(isset($_POST['submit'])) {
 
 }
 else {
+
+	echo "<p>Please enter the following information for the athlete whose workouts you wish to view: </p>";
 
 	// building query
 	$query = "SELECT athID from athlete";
