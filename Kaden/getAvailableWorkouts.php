@@ -92,7 +92,7 @@ if(isset($_POST['submit'])) {
 		while($row = mysqli_fetch_assoc($retval)) {  
 			// access data an build HTML table row
     		echo 
-    	 		"
+    	 		"<br><br>
     	  		<tr>
     	  		<td>{$row['wrkPlanID']}</td>  
           		<td>{$row['athID']}</td>
@@ -111,6 +111,7 @@ if(isset($_POST['submit'])) {
 
 	// free result set
 	mysqli_free_result($retval);
+	echo "<h4><a href=\"/~barkerk/getAvailableWorkouts.php\"> Search More Workouts</a></h4>";
 
 }
 else {
@@ -149,6 +150,7 @@ else {
 mysqli_close($mysqli); 
 ?> <!-- signifiies the end of PHP code -->
 </body>
+
 
 <h4><a href="/~thompsop1/motion_sense/index.html">Landing Page</a></h4>
 </html>

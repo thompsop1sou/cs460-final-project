@@ -126,6 +126,8 @@ if(isset($_POST['submit'])) {
     // free result set
 	  mysqli_free_result($retval);
 
+    echo "<h4><a href=\"/~barkerk/insertWrkLog.php\">Create another WorkoutLog</a><h4>";
+
 }
 else {
 
@@ -164,6 +166,6 @@ mysqli_rollback($mysqli);
 mysqli_close($mysqli);
 ?> <!-- signifiies the end of PHP code -->
 </body>
-  <h4><a href='/~barkerk/insertWrkLog.php'>Create another WorkoutLog</a><h4>
+  
   <h4><a href='/~thompsop1/motion_sense/index.html'>Landing Page</a><h4>
 </html>
