@@ -21,6 +21,7 @@ strength_plan table does not have, and vice versa.)
 -- Union of cardio_log and strength_log
 -- Saved as a view called exercise_plan_union
 
+CREATE VIEW exercise_plan_union AS
 SELECT cardio_plan.exr_plan_id,
 	cdo_plan_sets, cdo_plan_distance, cdo_plan_duration,
 	NULL AS str_plan_sets, NULL AS str_plan_reps, NULL AS str_plan_weight
@@ -35,6 +36,7 @@ FROM strength_plan;
 -- Saved as the all_plan_join view
 -- Note: Started with tables lower in the hierarchy, then right-joined them to tables higher up.
 
+CREATE VIEW all_plan_join AS
 SELECT *
 FROM exercise_plan_union
     RIGHT JOIN exercise_plan USING(exr_plan_id)
@@ -43,8 +45,8 @@ FROM exercise_plan_union
 
 -- Testing to see if the two views work
 
-SELECT * FROM exercise_plan_union;
-SELECT * FROM all_plan_join;
+--SELECT * FROM exercise_plan_union;
+--SELECT * FROM all_plan_join;
 
 
 
@@ -69,16 +71,21 @@ indicated date range.
 -- Joining workout_log with workout_plan
 -- Saved as a view called workout_log_plan_join
 
-SELECT wrk_log_id, ath_id, wrk_plan_id, wrk_plan_name, wrk_log_date FROM workout_log LEFT JOIN workout_plan USING(wrk_plan_id);
+CREATE VIEW workout_log_plan_join AS
+SELECT wrk_log_id, ath_id, wrk_plan_id, wrk_plan_name, wrk_log_date
+FROM workout_log LEFT JOIN workout_plan USING(wrk_plan_id);
 
 -- Joining exercise_log with exercise_plan and exercise
 -- Saved as a view called exercise_log_plan_join
 
-SELECT exr_log_id, wrk_log_id, exr_plan_id, exr_name, exr_type, exr_log_notes FROM exercise_log LEFT JOIN exercise_plan USING(exr_plan_id) LEFT JOIN exercise USING(exr_id);
+CREATE VIEW exercise_log_plan_join AS
+SELECT exr_log_id, wrk_log_id, exr_plan_id, exr_name, exr_type, exr_log_notes
+FROM exercise_log LEFT JOIN exercise_plan USING(exr_plan_id) LEFT JOIN exercise USING(exr_id);
 
 -- Union of cardio_log and strength_log
 -- Saved as a view called exercise_log_union
 
+CREATE VIEW exercise_log_union AS
 SELECT cardio_log.exr_log_id,
 	cdo_log_sets, cdo_log_distance, cdo_log_duration,
 	NULL AS str_log_sets, NULL AS str_log_reps, NULL AS str_log_weight
@@ -92,6 +99,7 @@ FROM strength_log;
 -- Putting them all together (where each of them has been saved as a view)
 -- This one will be saved as a view called all_log_join
 
+CREATE VIEW all_log_join AS
 SELECT *
 FROM exercise_log_union
     RIGHT JOIN exercise_log_plan_join USING(exr_log_id)
@@ -99,14 +107,13 @@ FROM exercise_log_union
 
 -- Testing the views
 
-SELECT * FROM workout_log_plan_join;
-SELECT * FROM exercise_log_plan_join;
-SELECT * FROM exercise_log_union;
-SELECT * FROM all_log_join;
+--SELECT * FROM workout_log_plan_join;
+--SELECT * FROM exercise_log_plan_join;
+--SELECT * FROM exercise_log_union;
+--SELECT * FROM all_log_join;
 
 -- Now actually creating the procedure using the saved views
 
-/*
 CREATE OR REPLACE FUNCTION
     athlete_log_procedure(in_ath_id INT, in_start_date DATE, in_end_date DATE)
 RETURNS TABLE (wrk_plan_name VARCHAR(100),
@@ -139,13 +146,12 @@ BEGIN
         AND all_log_join.wrk_log_date BETWEEN in_start_date AND in_end_date;
 END;
 $$ LANGUAGE plpgsql;
-*/
 
 -- Testing out procedure
 
-SELECT * FROM athlete_log_procedure(1, '2023-01-01', '2023-01-05');
-SELECT * FROM athlete_log_procedure(2, '2023-02-02', '2023-02-06');
-SELECT * FROM athlete_log_procedure(1, '2023-01-01', '2023-01-19');
+--SELECT * FROM athlete_log_procedure(1, '2023-01-01', '2023-01-05');
+--SELECT * FROM athlete_log_procedure(2, '2023-02-02', '2023-02-06');
+--SELECT * FROM athlete_log_procedure(1, '2023-01-01', '2023-01-19');
 
 
 
@@ -169,7 +175,6 @@ to find the distance and duration and return the result of the distance divided 
 
 -- Plan function
 
-/*
 CREATE OR REPLACE FUNCTION cardio_plan_speed_function(in_exr_plan_id INT)
 RETURNS FLOAT AS $$
 DECLARE
@@ -182,20 +187,16 @@ BEGIN
     RETURN(local_distance / local_duration);
 END;
 $$ LANGUAGE plpgsql;
-*/
 
 -- Testing out plan function
 
-SELECT * FROM cardio_plan;
-
-SELECT cardio_plan_speed_function(0); -- Should be null because there is no exercise plan with ID 0
-SELECT cardio_plan_speed_function(1); -- Should be null because this cardio plan does not have a duration
-SELECT cardio_plan_speed_function(2); -- Should be null because this cardio plan does not have a distance
-SELECT cardio_plan_speed_function(3); -- Should be null because this exercise plan ID refers to a strength plan (not to a cardio plan)
+--SELECT cardio_plan_speed_function(0); -- Should be null because there is no exercise plan with ID 0
+--SELECT cardio_plan_speed_function(1); -- Should be null because this cardio plan does not have a duration
+--SELECT cardio_plan_speed_function(2); -- Should be null because this cardio plan does not have a distance
+--SELECT cardio_plan_speed_function(3); -- Should be null because this exercise plan ID refers to a strength plan (not to a cardio plan)
 
 -- Log function
 
-/*
 CREATE FUNCTION cardio_log_speed_function(in_exr_log_id INT)
 RETURNS FLOAT AS $$
 DECLARE
@@ -208,19 +209,14 @@ BEGIN
     RETURN(local_distance / local_duration);
 END;
 $$ LANGUAGE plpgsql;
-*/
 
 -- Testing out log function
 
-SELECT * FROM cardio_log;
-
-SELECT cardio_log_speed_function(0); -- Should be null because there is no exercise log with ID 0
-SELECT cdo_log_distance, cdo_log_duration FROM cardio_log WHERE exr_log_id=1;
-SELECT cardio_log_speed_function(1); -- Should return 0.1333
-SELECT cardio_log_speed_function(4); -- Should be null because this cardio log does not have a distance
-SELECT cardio_log_speed_function(5); -- Should be null because this exercise log ID refers to a strength log (not to a cardio log)
-SELECT cdo_log_distance, cdo_log_duration FROM cardio_log WHERE exr_log_id=21;
-SELECT cardio_log_speed_function(21); -- Should return 0.09
+--SELECT cardio_log_speed_function(0); -- Should be null because there is no exercise log with ID 0
+--SELECT cardio_log_speed_function(1); -- Should return 0.1333
+--SELECT cardio_log_speed_function(4); -- Should be null because this cardio log does not have a distance
+--SELECT cardio_log_speed_function(5); -- Should be null because this exercise log ID refers to a strength log (not to a cardio log)
+--SELECT cardio_log_speed_function(21); -- Should return 0.09
 
 
 
@@ -245,7 +241,6 @@ proceed, in which case you will get to see the change in the database.
 
 -- Trigger function
 
-/*
 CREATE OR REPLACE FUNCTION exercise_log_trigger()
 RETURNS trigger AS $$
 DECLARE
@@ -265,30 +260,27 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
-*/
 
 -- Create the trigger
 
-/*
 CREATE TRIGGER exercise_log_trigger BEFORE INSERT OR UPDATE ON exercise_log
     FOR EACH ROW EXECUTE FUNCTION exercise_log_trigger();
-*/
 
 -- Testing insert trigger
 
-BEGIN;
+--BEGIN;
 
-INSERT INTO workout_log VALUES (100, 4, '2023-04-08'); -- Insert a new workout_log that the exercise_log can belong to
+--INSERT INTO workout_log VALUES (100, 4, '2023-04-08'); -- Insert a new workout_log that the exercise_log can belong to
 
-INSERT INTO exercise_log VALUES (100, 7, 100, 'test log'); -- Should throw the custom error because it points to the wrong exercise_plan_id (7)
-INSERT INTO exercise_log VALUES (100, 10, 100, 'test log'); -- Should be no problem because it points to the correct exercise_plan_id (10)
+--INSERT INTO exercise_log VALUES (100, 7, 100, 'test log'); -- Should throw the custom error because it points to the wrong exercise_plan_id (7)
+--INSERT INTO exercise_log VALUES (100, 10, 100, 'test log'); -- Should be no problem because it points to the correct exercise_plan_id (10)
 
-ROLLBACK;
+--ROLLBACK;
 
 -- Testing update trigger
 
-BEGIN;
+--BEGIN;
 
-UPDATE exercise_log SET exr_plan_id = 7 WHERE exr_log_id = 18; -- Should throw the custom error because it points to the wrong exr_plan_id (7 instead of 10)
+--UPDATE exercise_log SET exr_plan_id = 7 WHERE exr_log_id = 18; -- Should throw the custom error because it points to the wrong exr_plan_id (7 instead of 10)
 
-ROLLBACK;
+--ROLLBACK;
