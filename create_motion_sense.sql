@@ -1,255 +1,229 @@
-use f23_motionSense;
-
-
-
 /* Create Tables */
 
 /* trainer */
 
 CREATE TABLE trainer(
-    trnID INT(4) NOT NULL,
-    trnFirstName VARCHAR(35) NOT NULL,
-    trnLastName VARCHAR(35) NOT NULL,
-    trnEmail VARCHAR(254),
-    trnPhone VARCHAR(20)
+    trn_id SERIAL,
+    trn_first_name VARCHAR(35) NOT NULL,
+    trn_last_name VARCHAR(35) NOT NULL,
+    trn_email VARCHAR(254),
+    trn_phone VARCHAR(20)
 );
 
 ALTER TABLE trainer
-    ADD CONSTRAINT trnPK
-    PRIMARY KEY (trnID);
-
-ALTER TABLE trainer
-    MODIFY COLUMN trnID INT(4) NOT NULL AUTO_INCREMENT;
+    ADD CONSTRAINT trn_pk
+    PRIMARY KEY (trn_id);
 
 /* doctor */
 
 CREATE TABLE doctor(
-    docID INT(4) NOT NULL,
-    docFirstName VARCHAR(35) NOT NULL,
-    docLastName VARCHAR(35) NOT NULL,
-    docEmail VARCHAR(254),
-    docPhone VARCHAR(20)
+    doc_id SERIAL,
+    doc_first_name VARCHAR(35) NOT NULL,
+    doc_last_name VARCHAR(35) NOT NULL,
+    doc_email VARCHAR(254),
+    doc_phone VARCHAR(20)
 );
 
 ALTER TABLE doctor
-    ADD CONSTRAINT docPK
-    PRIMARY KEY (docID);
-
-ALTER TABLE doctor
-    MODIFY COLUMN docID INT(4) NOT NULL AUTO_INCREMENT;
+    ADD CONSTRAINT doc_pk
+    PRIMARY KEY (doc_id);
 
 /* athlete */
     
 CREATE TABLE athlete(
-    athID INT(4) NOT NULL,
-    trnID INT(4) NOT NULL,
-    docID INT(4),
-    athFirstName VARCHAR(35) NOT NULL,
-    athLastName VARCHAR(35) NOT NULL,
-    athDateOfBirth DATE,
-    athEmail VARCHAR(254),
-    athPhone VARCHAR(20),
-    athActive BOOLEAN NOT NULL DEFAULT TRUE
+    ath_id SERIAL,
+    trn_id INT NOT NULL,
+    doc_id INT,
+    ath_first_name VARCHAR(35) NOT NULL,
+    ath_last_name VARCHAR(35) NOT NULL,
+    ath_date_of_birth DATE,
+    ath_email VARCHAR(254),
+    ath_phone VARCHAR(20),
+    ath_active BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 ALTER TABLE athlete
-    ADD CONSTRAINT athPK
-    PRIMARY KEY (athID);
+    ADD CONSTRAINT ath_pk
+    PRIMARY KEY (ath_id);
 
 ALTER TABLE athlete
-    MODIFY COLUMN athID INT(4) NOT NULL AUTO_INCREMENT;
+    ADD CONSTRAINT ath_trn_fk
+    FOREIGN KEY (trn_id)
+    REFERENCES trainer(trn_id);
 
 ALTER TABLE athlete
-    ADD CONSTRAINT athTrnFK
-    FOREIGN KEY (trnID)
-    REFERENCES trainer(trnID);
-
-ALTER TABLE athlete
-    ADD CONSTRAINT athDocFK
-    FOREIGN KEY (docID)
-    REFERENCES doctor(docID);
+    ADD CONSTRAINT ath_doc_fk
+    FOREIGN KEY (doc_id)
+    REFERENCES doctor(doc_id);
 
 /* exercise */
 
+CREATE TYPE exercise_type AS ENUM ('cardio', 'strength');
+
 CREATE TABLE exercise(
-    exrID INT(4) NOT NULL,
-    exrName VARCHAR(100) NOT NULL,
-    exrType ENUM('Cardio', 'Strength') NOT NULL
+    exr_id SERIAL,
+    exr_name VARCHAR(100) NOT NULL,
+    exr_type exercise_type NOT NULL
 );
 
 ALTER TABLE exercise
-    ADD CONSTRAINT exrPK
-    PRIMARY KEY (exrID);
+    ADD CONSTRAINT exr_pk
+    PRIMARY KEY (exr_id);
 
-ALTER TABLE exercise
-    MODIFY COLUMN exrID INT(4) NOT NULL AUTO_INCREMENT;
+/* workout_plan */
 
-/* workoutPlan */
-
-CREATE TABLE workoutPlan(
-    wrkPlanID INT(4) NOT NULL,
-    athID INT(4) NOT NULL,
-    wrkPlanName VARCHAR(100) NOT NULL,
-    wrkPlanStartDate DATE NOT NULL,
-    wrkPlanEndDate DATE NOT NULL,
-    wrkPlanSchedule VARCHAR(100)
+CREATE TABLE workout_plan(
+    wrk_plan_id SERIAL,
+    ath_id INT NOT NULL,
+    wrk_plan_name VARCHAR(100) NOT NULL,
+    wrk_plan_start_date DATE NOT NULL,
+    wrk_plan_end_date DATE NOT NULL,
+    wrk_plan_schedule VARCHAR(100)
 );
 
-ALTER TABLE workoutPlan
-    ADD CONSTRAINT wrkPlanPK
-    PRIMARY KEY (wrkPlanID);
+ALTER TABLE workout_plan
+    ADD CONSTRAINT wrk_plan_pk
+    PRIMARY KEY (wrk_plan_id);
 
-ALTER TABLE workoutPlan
-    MODIFY COLUMN wrkPlanID INT(4) NOT NULL AUTO_INCREMENT;
+ALTER TABLE workout_plan
+    ADD CONSTRAINT wrk_plan_ath_fk
+    FOREIGN KEY (ath_id)
+    REFERENCES athlete(ath_id);
 
-ALTER TABLE workoutPlan
-    ADD CONSTRAINT wrkPlanAthFK
-    FOREIGN KEY (athID)
-    REFERENCES athlete(athID);
+/* exercise_plan */
 
-/* exercisePlan */
-
-CREATE TABLE exercisePlan(
-    exrPlanID INT(4) NOT NULL,
-    exrID INT(4) NOT NULL,
-    wrkPlanID INT(4) NOT NULL,
-    exrPlanNotes VARCHAR(100)
+CREATE TABLE exercise_plan(
+    exr_plan_id SERIAL,
+    exr_id INT NOT NULL,
+    wrk_plan_id INT NOT NULL,
+    exr_plan_notes VARCHAR(100)
 );
 
-ALTER TABLE exercisePlan
-    ADD CONSTRAINT exrPlanPK
-    PRIMARY KEY (exrPlanID);
+ALTER TABLE exercise_plan
+    ADD CONSTRAINT exr_plan_pk
+    PRIMARY KEY (exr_plan_id);
 
-ALTER TABLE exercisePlan
-    MODIFY COLUMN exrPlanID INT(4) NOT NULL AUTO_INCREMENT;
+ALTER TABLE exercise_plan
+    ADD CONSTRAINT exr_plan_exr_fk
+    FOREIGN KEY (exr_id)
+    REFERENCES exercise(exr_id);
 
-ALTER TABLE exercisePlan
-    ADD CONSTRAINT exrPlanExrFK
-    FOREIGN KEY (exrID)
-    REFERENCES exercise(exrID);
+ALTER TABLE exercise_plan
+    ADD CONSTRAINT exr_plan_wrk_plan_fk
+    FOREIGN KEY (wrk_plan_id)
+    REFERENCES workout_plan(wrk_plan_id);
 
-ALTER TABLE exercisePlan
-    ADD CONSTRAINT exrPlanWrkPlanFK
-    FOREIGN KEY (wrkPlanID)
-    REFERENCES workoutPlan(wrkPlanID);
+/* cardio_plan */
 
-/* cardioPlan */
-
-CREATE TABLE cardioPlan(
-    exrPlanID INT(4) NOT NULL,
-    cdoPlanSets INT(4),
-    cdoPlanDistance FLOAT,
-    cdoPlanDuration FLOAT
+CREATE TABLE cardio_plan(
+    exr_plan_id INT NOT NULL,
+    cdo_plan_sets INT,
+    cdo_plan_distance FLOAT,
+    cdo_plan_duration FLOAT
 );
 
-ALTER TABLE cardioPlan
-    ADD CONSTRAINT cdoPlanPK
-    PRIMARY KEY (exrPlanID);
+ALTER TABLE cardio_plan
+    ADD CONSTRAINT cdo_plan_pk
+    PRIMARY KEY (exr_plan_id);
 
-ALTER TABLE cardioPlan
-    ADD CONSTRAINT cdoPlanExrPlanFK
-    FOREIGN KEY (exrPlanID)
-    REFERENCES exercisePlan(exrPlanID);
+ALTER TABLE cardio_plan
+    ADD CONSTRAINT cdo_plan_exr_plan_fk
+    FOREIGN KEY (exr_plan_id)
+    REFERENCES exercise_plan(exr_plan_id);
 
-/* strengthPlan */
+/* strength_plan */
 
-CREATE TABLE strengthPlan(
-    exrPlanID INT(4) NOT NULL,
-    strPlanSets INT(4),
-    strPlanReps INT(4),
-    strPlanWeight FLOAT
+CREATE TABLE strength_plan(
+    exr_plan_id INT NOT NULL,
+    str_plan_sets INT,
+    str_plan_reps INT,
+    str_plan_weight FLOAT
 );
 
-ALTER TABLE strengthPlan
-    ADD CONSTRAINT strPlanPK
-    PRIMARY KEY (exrPlanID);
+ALTER TABLE strength_plan
+    ADD CONSTRAINT str_plan_pk
+    PRIMARY KEY (exr_plan_id);
 
-ALTER TABLE strengthPlan
-    ADD CONSTRAINT strPlanExrPlanFK
-    FOREIGN KEY (exrPlanID)
-    REFERENCES exercisePlan(exrPlanID);
+ALTER TABLE strength_plan
+    ADD CONSTRAINT str_plan_exr_plan_fk
+    FOREIGN KEY (exr_plan_id)
+    REFERENCES exercise_plan(exr_plan_id);
 
-/* workoutLog */
+/* workout_log */
 
-CREATE TABLE workoutLog(
-    wrkLogID INT(4) NOT NULL,
-    wrkPlanID INT(4) NOT NULL,
-    wrkLogDate DATE NOT NULL
+CREATE TABLE workout_log(
+    wrk_log_id SERIAL,
+    wrk_plan_id INT NOT NULL,
+    wrk_log_date DATE NOT NULL
 );
 
-ALTER TABLE workoutLog
-    ADD CONSTRAINT wrkLogPK
-    PRIMARY KEY (wrkLogID);
+ALTER TABLE workout_log
+    ADD CONSTRAINT wrk_log_pk
+    PRIMARY KEY (wrk_log_id);
 
-ALTER TABLE workoutLog
-    MODIFY COLUMN wrkLogID INT(4) NOT NULL AUTO_INCREMENT;
+ALTER TABLE workout_log
+    ADD CONSTRAINT wrk_log_wrk_plan_fk
+    FOREIGN KEY (wrk_plan_id)
+    REFERENCES workout_plan(wrk_plan_id);
 
-ALTER TABLE workoutLog
-    ADD CONSTRAINT wrkLogWrkPlanFK
-    FOREIGN KEY (wrkPlanID)
-    REFERENCES workoutPlan(wrkPlanID);
+/* exercise_log */
 
-/* exerciseLog */
-
-CREATE TABLE exerciseLog(
-    exrLogID INT(4) NOT NULL,
-    exrPlanID INT(4) NOT NULL,
-    wrkLogID INT(4) NOT NULL,
-    exrLogNotes VARCHAR(100)
+CREATE TABLE exercise_log(
+    exr_log_id SERIAL,
+    exr_plan_id INT NOT NULL,
+    wrk_log_id INT NOT NULL,
+    exr_log_notes VARCHAR(100)
 );
 
-ALTER TABLE exerciseLog
-    ADD CONSTRAINT exrLogPK
-    PRIMARY KEY (exrLogID);
+ALTER TABLE exercise_log
+    ADD CONSTRAINT exr_log_pk
+    PRIMARY KEY (exr_log_id);
 
-ALTER TABLE exerciseLog
-    MODIFY COLUMN exrLogID INT(4) NOT NULL AUTO_INCREMENT;
+ALTER TABLE exercise_log
+    ADD CONSTRAINT exr_log_exr_plan_fk
+    FOREIGN KEY (exr_plan_id)
+    REFERENCES exercise_plan(exr_plan_id);
 
-ALTER TABLE exerciseLog
-    ADD CONSTRAINT exrLogExrPlanFK
-    FOREIGN KEY (exrPlanID)
-    REFERENCES exercisePlan(exrPlanID);
+ALTER TABLE exercise_log
+    ADD CONSTRAINT exr_log_wrk_log_fk
+    FOREIGN KEY (wrk_log_id)
+    REFERENCES workout_log(wrk_log_id);
 
-ALTER TABLE exerciseLog
-    ADD CONSTRAINT exrLogWrkLogFK
-    FOREIGN KEY (wrkLogID)
-    REFERENCES workoutLog(wrkLogID);
+/* cardio_log */
 
-/* cardioLog */
-
-CREATE TABLE cardioLog(
-    exrLogID INT(4) NOT NULL,
-    cdoLogSets INT(4),
-    cdoLogDistance FLOAT,
-    cdoLogDuration FLOAT
+CREATE TABLE cardio_log(
+    exr_log_id INT NOT NULL,
+    cdo_log_sets INT,
+    cdo_log_distance FLOAT,
+    cdo_log_duration FLOAT
 );
 
-ALTER TABLE cardioLog
-    ADD CONSTRAINT cdoLogPK
-    PRIMARY KEY (exrLogID);
+ALTER TABLE cardio_log
+    ADD CONSTRAINT cdo_log_pk
+    PRIMARY KEY (exr_log_id);
 
-ALTER TABLE cardioLog
-    ADD CONSTRAINT cdoLogExrLogFK
-    FOREIGN KEY (exrLogID)
-    REFERENCES exerciseLog(exrLogID);
+ALTER TABLE cardio_log
+    ADD CONSTRAINT cdo_log_exr_log_fk
+    FOREIGN KEY (exr_log_id)
+    REFERENCES exercise_log(exr_log_id);
 
-/* strengthLog */
+/* strength_log */
 
-CREATE TABLE strengthLog(
-    exrLogID INT(4) NOT NULL,
-    strLogSets INT(4),
-    strLogReps INT(4),
-    strLogWeight FLOAT
+CREATE TABLE strength_log(
+    exr_log_id INT NOT NULL,
+    str_log_sets INT,
+    str_log_reps INT,
+    str_log_weight FLOAT
 );
 
-ALTER TABLE strengthLog
-    ADD CONSTRAINT strLogPK
-    PRIMARY KEY (exrLogID);
+ALTER TABLE strength_log
+    ADD CONSTRAINT str_log_pk
+    PRIMARY KEY (exr_log_id);
 
-ALTER TABLE strengthLog
-    ADD CONSTRAINT strLogExrLogFK
-    FOREIGN KEY (exrLogID)
-    REFERENCES exerciseLog(exrLogID);
+ALTER TABLE strength_log
+    ADD CONSTRAINT str_log_exr_log_fk
+    FOREIGN KEY (exr_log_id)
+    REFERENCES exercise_log(exr_log_id);
 
 
 
@@ -257,7 +231,7 @@ ALTER TABLE strengthLog
 
 /* trainer */
 
-INSERT INTO trainer (trnID, trnFirstName, trnLastName, trnEmail, trnPhone)
+INSERT INTO trainer (trn_id, trn_first_name, trn_last_name, trn_email, trn_phone)
 VALUES
 (1,'Timothy','Thomas', 'tthomas@example.com', '(541) 555-0000'),
 (2,'Tracy','Taylor', 'ttaylor@example.com', '(541) 555-0001'),
@@ -267,7 +241,7 @@ VALUES
 
 /* doctor */
 
-INSERT INTO doctor (docID, docFirstName, docLastName, docEmail, docPhone)
+INSERT INTO doctor (doc_id, doc_first_name, doc_last_name, doc_email, doc_phone)
 VALUES
 (1,'Deborah','Davis', 'ddavis@example.com', '(541) 555-0020'),
 (2,'Daniel','Diaz', 'ddiaz@example.com', '(541) 555-0021'),
@@ -277,7 +251,7 @@ VALUES
 
 /* athlete */
 
-INSERT INTO athlete (athID, trnID, docID, athFirstName, athLastName, athDateOfBirth, athEmail, athPhone) 
+INSERT INTO athlete (ath_id, trn_id, doc_id, ath_first_name, ath_last_name, ath_date_of_birth, ath_email, ath_phone) 
 VALUES
 (1, 1, 1, 'Andrea', 'Adams', '2000-01-01', 'aadams@example.com', '(541) 555-0010'),
 (2, 2, 2, 'Aaron', 'Anderson', '2000-01-02', 'aanderson@example.com', '(541) 555-0011'),
@@ -287,24 +261,24 @@ VALUES
 
 /* exercise */
 
-INSERT INTO exercise (exrID, exrName, exrType)
+INSERT INTO exercise (exr_id, exr_name, exr_type)
 VALUES
-(1, 'Running', 'Cardio'),
-(2, 'Swimming', 'Cardio'),
-(3, 'Rowing', 'Cardio'),
-(4, 'Biking', 'Cardio'),
-(5, 'Jump Rope', 'Cardio'),
-(6, 'Squat', 'Strength'),
-(7, 'Deadlift', 'Strength'),
-(8, 'Bench', 'Strength'),
-(9, 'Back Row', 'Strength'),
-(10, 'Pullup', 'Strength'),
-(11, 'Pushup', 'Strength'),
-(12, 'Situp', 'Strength');
+(1, 'Running', 'cardio'),
+(2, 'Swimming', 'cardio'),
+(3, 'Rowing', 'cardio'),
+(4, 'Biking', 'cardio'),
+(5, 'Jump Rope', 'cardio'),
+(6, 'Squat', 'strength'),
+(7, 'Deadlift', 'strength'),
+(8, 'Bench', 'strength'),
+(9, 'Back Row', 'strength'),
+(10, 'Pullup', 'strength'),
+(11, 'Pushup', 'strength'),
+(12, 'Situp', 'strength');
 
-/* workoutPlan */
+/* workout_plan */
 
-INSERT INTO workoutPlan (wrkPlanID, athID, wrkPlanName, wrkPlanStartDate, wrkPlanEndDate, wrkPlanSchedule)
+INSERT INTO workout_plan (wrk_plan_id, ath_id, wrk_plan_name, wrk_plan_start_date, wrk_plan_end_date, wrk_plan_schedule)
 VALUES
 (1, 1, 'Run', '2023-01-01', '2023-01-15', 'Three times a week'),
 (2, 2, 'Bodyweight Workout', '2023-02-02', '2023-02-22', 'Every Monday and Thursday'),
@@ -312,9 +286,9 @@ VALUES
 (4, 3, 'Full Body Workout', '2023-04-01', '2023-04-08', 'Two times a week'),
 (5, 2, 'Swim', '2023-02-23', '2023-03-01', 'Four times a week');
 
-/* exercisePlan */
+/* exercise_plan */
 
-INSERT INTO exercisePlan (exrPlanID, exrID, wrkPlanID, exrPlanNotes)
+INSERT INTO exercise_plan (exr_plan_id, exr_id, wrk_plan_id, exr_plan_notes)
 VALUES
 (1, 1, 1, ''),
 (2, 4, 2, 'Warmup'),
@@ -330,9 +304,9 @@ VALUES
 (13, 1, 4, ''),
 (14, 2, 5, '');
 
-/* cardioPlan */
+/* cardio_plan */
 
-INSERT INTO cardioPlan (exrPlanID, cdoPlanSets, cdoPlanDistance, cdoPlanDuration)
+INSERT INTO cardio_plan (exr_plan_id, cdo_plan_sets, cdo_plan_distance, cdo_plan_duration)
 VALUES
 (1, 1, 2.0, NULL),
 (2, 1, NULL, 5.0),
@@ -340,9 +314,9 @@ VALUES
 (13, 1, NULL, 10.0),
 (14, 5, 100.0, NULL);
 
-/* strengthPlan */
+/* strength_plan */
 
-INSERT INTO strengthPlan (exrPlanID, strPlanSets, strPlanReps, strPlanWeight)
+INSERT INTO strength_plan (exr_plan_id, str_plan_sets, str_plan_reps, str_plan_weight)
 VALUES
 (3, 3, 8, NULL),
 (4, 3, 15, NULL),
@@ -353,9 +327,9 @@ VALUES
 (11, 3, 6, 150),
 (12, 3, 6, 120);
 
-/* workoutLog */
+/* workout_log */
 
-INSERT INTO workoutLog (wrkLogID, wrkPlanID, wrkLogDate) 
+INSERT INTO workout_log (wrk_log_id, wrk_plan_id, wrk_log_date) 
 VALUES
 (1, 1, '2023-01-01'),
 (2, 1, '2023-01-04'),
@@ -366,16 +340,16 @@ VALUES
 (8, 3, '2023-01-019'),
 (9, 4, '2023-04-08');
 
-/* exerciseLog */
+/* exercise_log */
 
-INSERT INTO exerciseLog (exrLogID, exrPlanID, wrkLogID, exrLogNotes) 
+INSERT INTO exercise_log (exr_log_id, exr_plan_id, wrk_log_id, exr_log_notes) 
 VALUES
 (1, 1, 1, null),
 (2, 1, 2, null),
 (3, 1, 3, 'tired today'),
 (4, 2, 4, null),
-(5, 3, 4, "couldn't quite get 8 pullups"),
-(6, 4, 4, "couldn't quited get 15 pushups"),
+(5, 3, 4, 'could not quite get 8 pullups'),
+(6, 4, 4, 'could not quite get 15 pushups'),
 (7, 5, 4, null),
 (8, 2, 5, null),
 (9, 3, 5, null),
@@ -392,9 +366,9 @@ VALUES
 (20, 12, 9, 'feeling great today, went up in weight'),
 (21, 13, 9, null);
 
-/* cardioLog */
+/* cardio_log */
 
-INSERT INTO cardioLog (exrLogID, cdoLogSets, cdoLogDistance, cdoLogDuration) 
+INSERT INTO cardio_log (exr_log_id, cdo_log_sets, cdo_log_distance, cdo_log_duration) 
 VALUES
 (1, 1, 2.0, 15.0),
 (2, 1, 2.0, 14.0),
@@ -405,9 +379,9 @@ VALUES
 (15, 3, null, null),
 (21, 1, 0.9, 10);
 
-/* strengthLog */
+/* strength_log */
 
-INSERT INTO strengthLog (exrLogID, strLogSets, strLogReps, strLogWeight) 
+INSERT INTO strength_log (exr_log_id, str_log_sets, str_log_reps, str_log_weight) 
 VALUES
 (5, 3, 7, null),
 (6, 3, 13, null),
