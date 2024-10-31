@@ -1,59 +1,59 @@
 /*
 VIEW
 
-Title: all_plan_join
+Title: AllPlanJoin
 
 Description: This view has all of the plan tables joined together by their relevant IDs.
 
-Justification: Because the plan data is spread out over several different tables (workout_plan,
-exercise, exercise_plan, cardio_plan, and strength_plan), it can be tricky to query it all correctly.
+Justification: Because the plan data is spread out over several different tables (WorkoutPlan,
+Exercise, ExercisePlan, CardioPlan, and StrengthPlan), it can be tricky to query it all correctly.
 This view does the work of joining all of the tables so that the data is easier to query. In a
 practical sense, it could be used by athletes who want to see what their trainer has planned for
 them to do during a particular week.
 
-Expected Execution: The table below shows selected columns from the all_plan_join view as it
-currently exists inside of the Motion Sense database. (Note that cardio exercises always have null
-values in the str_plan_sets column while strength exercises always have null values in the
-cdo_plan_sets column. This is a result of the fact that the cardio_plan table has columns which the
-strength_plan table does not have, and vice versa.)
+Expected Execution: The table below shows selected columns from the AllPlanJoin view as it
+currently exists insIDe of the Motion Sense database. (Note that cardio exercises always have null
+values in the StrPlanSets column while strength exercises always have null values in the
+CdoPlanSets column. This is a result of the fact that the CardioPlan table has columns which the
+StrengthPlan table does not have, and vice versa.)
 */
 
--- Union of cardio_log and strength_log
--- Saved as a view called exercise_plan_union
+-- Union of CardioLog and StrengthLog
+-- Saved as a view called ExercisePlanUnion
 
-CREATE VIEW exercise_plan_union AS
-SELECT cardio_plan.exr_plan_id,
-	cdo_plan_sets, cdo_plan_distance, cdo_plan_duration,
-	NULL AS str_plan_sets, NULL AS str_plan_reps, NULL AS str_plan_weight
-FROM cardio_plan
+CREATE VIEW ExercisePlanUnion AS
+SELECT CardioPlan.ExrPlanID,
+	CdoPlanSets, CdoPlanDistance, CdoPlanDuration,
+	NULL AS StrPlanSets, NULL AS StrPlanReps, NULL AS StrPlanWeight
+FROM CardioPlan
 UNION
-SELECT strength_plan.exr_plan_id,
-	NULL AS cdo_plan_sets, NULL AS cdo_plan_distance, NULL AS cdo_plan_duration,
-	str_plan_sets, str_plan_reps, str_plan_weight
-FROM strength_plan;
+SELECT StrengthPlan.ExrPlanID,
+	NULL AS CdoPlanSets, NULL AS CdoPlanDistance, NULL AS CdoPlanDuration,
+	StrPlanSets, StrPlanReps, StrPlanWeight
+FROM StrengthPlan;
 
 -- Joining all the plan tables together
--- Saved as the all_plan_join view
+-- Saved as the AllPlanJoin view
 -- Note: Started with tables lower in the hierarchy, then right-joined them to tables higher up.
 
-CREATE VIEW all_plan_join AS
+CREATE VIEW AllPlanJoin AS
 SELECT *
-FROM exercise_plan_union
-    RIGHT JOIN exercise_plan USING(exr_plan_id)
-    RIGHT JOIN exercise USING(exr_id)
-    RIGHT JOIN workout_plan USING(wrk_plan_id);
+FROM ExercisePlanUnion
+    RIGHT JOIN ExercisePlan USING(ExrPlanID)
+    RIGHT JOIN Exercise USING(ExrID)
+    RIGHT JOIN WorkoutPlan USING(WrkPlanID);
 
 -- Testing to see if the two views work
 
---SELECT * FROM exercise_plan_union;
---SELECT * FROM all_plan_join;
+--SELECT * FROM ExercisePlanUnion;
+--SELECT * FROM AllPlanJoin;
 
 
 
 /*
 PROCEDURE
 
-Title: athlete_log_procedure
+Title: AthleteLogProcedure
 
 Description: This procedure returns a result set containing all of the logs for a particular
 athlete during a particular date range.
@@ -68,101 +68,101 @@ indicated date range.
 
 -- Building the views which will support this procedure.
 
--- Joining workout_log with workout_plan
--- Saved as a view called workout_log_plan_join
+-- Joining WorkoutLog with WorkoutPlan
+-- Saved as a view called WorkoutLogPlanJoin
 
-CREATE VIEW workout_log_plan_join AS
-SELECT wrk_log_id, ath_id, wrk_plan_id, wrk_plan_name, wrk_log_date
-FROM workout_log LEFT JOIN workout_plan USING(wrk_plan_id);
+CREATE VIEW WorkoutLogPlanJoin AS
+SELECT WrkLogID, AthID, WrkPlanID, WrkPlanName, WrkLogDate
+FROM WorkoutLog LEFT JOIN WorkoutPlan USING(WrkPlanID);
 
--- Joining exercise_log with exercise_plan and exercise
--- Saved as a view called exercise_log_plan_join
+-- Joining ExerciseLog with ExercisePlan and Exercise
+-- Saved as a view called ExerciseLogPlanJoin
 
-CREATE VIEW exercise_log_plan_join AS
-SELECT exr_log_id, wrk_log_id, exr_plan_id, exr_name, exr_type, exr_log_notes
-FROM exercise_log LEFT JOIN exercise_plan USING(exr_plan_id) LEFT JOIN exercise USING(exr_id);
+CREATE VIEW ExerciseLogPlanJoin AS
+SELECT ExrLogID, WrkLogID, ExrPlanID, ExrName, ExrType, ExrLogNotes
+FROM ExerciseLog LEFT JOIN ExercisePlan USING(ExrPlanID) LEFT JOIN Exercise USING(ExrID);
 
--- Union of cardio_log and strength_log
--- Saved as a view called exercise_log_union
+-- Union of CardioLog and StrengthLog
+-- Saved as a view called ExerciseLogUnion
 
-CREATE VIEW exercise_log_union AS
-SELECT cardio_log.exr_log_id,
-	cdo_log_sets, cdo_log_distance, cdo_log_duration,
-	NULL AS str_log_sets, NULL AS str_log_reps, NULL AS str_log_weight
-FROM cardio_log
+CREATE VIEW ExerciseLogUnion AS
+SELECT CardioLog.ExrLogID,
+	CdoLogSets, CdoLogDistance, CdoLogDuration,
+	NULL AS StrLogSets, NULL AS StrLogReps, NULL AS StrLogWeight
+FROM CardioLog
 UNION
-SELECT strength_log.exr_log_id,
-	NULL AS cdo_log_sets, NULL AS cdo_log_distance, NULL AS cdo_log_duration,
-	str_log_sets, str_log_reps, str_log_weight
-FROM strength_log;
+SELECT StrengthLog.ExrLogID,
+	NULL AS CdoLogSets, NULL AS CdoLogDistance, NULL AS CdoLogDuration,
+	StrLogSets, StrLogReps, StrLogWeight
+FROM StrengthLog;
 
 -- Putting them all together (where each of them has been saved as a view)
--- This one will be saved as a view called all_log_join
+-- This one will be saved as a view called AllLogJoin
 
-CREATE VIEW all_log_join AS
+CREATE VIEW AllLogJoin AS
 SELECT *
-FROM exercise_log_union
-    RIGHT JOIN exercise_log_plan_join USING(exr_log_id)
-    RIGHT JOIN workout_log_plan_join USING(wrk_log_id);
+FROM ExerciseLogUnion
+    RIGHT JOIN ExerciseLogPlanJoin USING(ExrLogID)
+    RIGHT JOIN WorkoutLogPlanJoin USING(WrkLogID);
 
 -- Testing the views
 
---SELECT * FROM workout_log_plan_join;
---SELECT * FROM exercise_log_plan_join;
---SELECT * FROM exercise_log_union;
---SELECT * FROM all_log_join;
+--SELECT * FROM WorkoutLogPlanJoin;
+--SELECT * FROM ExerciseLogPlanJoin;
+--SELECT * FROM ExerciseLogUnion;
+--SELECT * FROM AllLogJoin;
 
 -- Now actually creating the procedure using the saved views
 
 CREATE OR REPLACE FUNCTION
-    athlete_log_procedure(in_ath_id INT, in_start_date DATE, in_end_date DATE)
-RETURNS TABLE (wrk_plan_name VARCHAR(100),
-                wrk_log_date DATE,
-                exr_name VARCHAR(100),
-                exr_type exercise_type,
-                exr_log_notes VARCHAR(100),
-                cdo_log_sets INT,
-                cdo_log_distance FLOAT,
-                cdo_log_duration FLOAT,
-                str_log_sets INT,
-                str_log_reps INT,
-                str_log_weight FLOAT)
+    AthleteLogProcedure(InAthID INT, InStartDate DATE, InEndDate DATE)
+RETURNS TABLE (WrkPlanName VARCHAR(100),
+                WrkLogDate DATE,
+                ExrName VARCHAR(100),
+                ExrType ExerciseType,
+                ExrLogNotes VARCHAR(100),
+                CdoLogSets INT,
+                CdoLogDistance FLOAT,
+                CdoLogDuration FLOAT,
+                StrLogSets INT,
+                StrLogReps INT,
+                StrLogWeight FLOAT)
 AS $$
 BEGIN
     RETURN QUERY
-    SELECT all_log_join.wrk_plan_name,
-        all_log_join.wrk_log_date,
-        all_log_join.exr_name,
-        all_log_join.exr_type,
-        all_log_join.exr_log_notes,
-        all_log_join.cdo_log_sets,
-        all_log_join.cdo_log_distance,
-        all_log_join.cdo_log_duration,
-        all_log_join.str_log_sets,
-        all_log_join.str_log_reps,
-        all_log_join.str_log_weight
-    FROM all_log_join
-    WHERE all_log_join.ath_id = in_ath_id
-        AND all_log_join.wrk_log_date BETWEEN in_start_date AND in_end_date;
+    SELECT AllLogJoin.WrkPlanName,
+        AllLogJoin.WrkLogDate,
+        AllLogJoin.ExrName,
+        AllLogJoin.ExrType,
+        AllLogJoin.ExrLogNotes,
+        AllLogJoin.CdoLogSets,
+        AllLogJoin.CdoLogDistance,
+        AllLogJoin.CdoLogDuration,
+        AllLogJoin.StrLogSets,
+        AllLogJoin.StrLogReps,
+        AllLogJoin.StrLogWeight
+    FROM AllLogJoin
+    WHERE AllLogJoin.AthID = InAthID
+        AND AllLogJoin.WrkLogDate BETWEEN InStartDate AND InEndDate;
 END;
 $$ LANGUAGE plpgsql;
 
 -- Testing out procedure
 
---SELECT * FROM athlete_log_procedure(1, '2023-01-01', '2023-01-05');
---SELECT * FROM athlete_log_procedure(2, '2023-02-02', '2023-02-06');
---SELECT * FROM athlete_log_procedure(1, '2023-01-01', '2023-01-19');
+--SELECT * FROM AthleteLogProcedure(1, '2023-01-01', '2023-01-05');
+--SELECT * FROM AthleteLogProcedure(2, '2023-02-02', '2023-02-06');
+--SELECT * FROM AthleteLogProcedure(1, '2023-01-01', '2023-01-19');
 
 
 
 /*
 FUNCTION
 
-Title: cardio_plan_speed_function and cardio_log_speed_function
+Title: CardioPlanSpeedFunction and CardioLogSpeedFunction
 
 Description: These two functions both calculate the average speed of a cardio exercise, using the
-distance and duration associated with the exercise. One function is for entries in the cardio_plan
-table; the other is for entries in the cardio_log table.
+distance and duration associated with the exercise. One function is for entries in the CardioPlan
+table; the other is for entries in the CardioLog table.
 
 Justification: This could be used in a procedure or view which summarizes data from a plan or log.
 For example, if a trainer has planned for an athlete to run two miles in sixteen minutes, the
@@ -170,91 +170,91 @@ athlete might want to be able to quickly see what pace they need to set in order
 goal.
 
 Expected Execution: Both functions require the ID of the cardio plan or log. They then use that ID
-to find the distance and duration and return the result of the distance divided by the duration.
+to find the distance and duration and return the result of the distance divIDed by the duration.
 */
 
 -- Plan function
 
-CREATE OR REPLACE FUNCTION cardio_plan_speed_function(in_exr_plan_id INT)
+CREATE OR REPLACE FUNCTION CardioPlanSpeedFunction(InExrPlanID INT)
 RETURNS FLOAT AS $$
 DECLARE
-	local_distance FLOAT DEFAULT NULL;
-    local_duration FLOAT DEFAULT NULL;
+	LocalDistance FLOAT DEFAULT NULL;
+    LocalDuration FLOAT DEFAULT NULL;
 BEGIN
-    SELECT cdo_plan_distance, cdo_plan_duration INTO local_distance, local_duration
-    FROM cardio_plan WHERE exr_plan_id = in_exr_plan_id;
+    SELECT CdoPlanDistance, CdoPlanDuration INTO LocalDistance, LocalDuration
+    FROM CardioPlan WHERE ExrPlanID = InExrPlanID;
     
-    RETURN(local_distance / local_duration);
+    RETURN(LocalDistance / LocalDuration);
 END;
 $$ LANGUAGE plpgsql;
 
 -- Testing out plan function
 
---SELECT cardio_plan_speed_function(0); -- Should be null because there is no exercise plan with ID 0
---SELECT cardio_plan_speed_function(1); -- Should be null because this cardio plan does not have a duration
---SELECT cardio_plan_speed_function(2); -- Should be null because this cardio plan does not have a distance
---SELECT cardio_plan_speed_function(3); -- Should be null because this exercise plan ID refers to a strength plan (not to a cardio plan)
+--SELECT CardioPlanSpeedFunction(0); -- Should be null because there is no exercise plan with ID 0
+--SELECT CardioPlanSpeedFunction(1); -- Should be null because this cardio plan does not have a duration
+--SELECT CardioPlanSpeedFunction(2); -- Should be null because this cardio plan does not have a distance
+--SELECT CardioPlanSpeedFunction(3); -- Should be null because this exercise plan ID refers to a strength plan (not to a cardio plan)
 
 -- Log function
 
-CREATE FUNCTION cardio_log_speed_function(in_exr_log_id INT)
+CREATE FUNCTION CardioLogSpeedFunction(InExrLogID INT)
 RETURNS FLOAT AS $$
 DECLARE
-	local_distance FLOAT DEFAULT NULL;
-    local_duration FLOAT DEFAULT NULL;
+	LocalDistance FLOAT DEFAULT NULL;
+    LocalDuration FLOAT DEFAULT NULL;
 BEGIN
-    SELECT cdo_log_distance, cdo_log_duration INTO local_distance, local_duration
-    FROM cardio_log WHERE exr_log_id = in_exr_log_id;
+    SELECT CdoLogDistance, CdoLogDuration INTO LocalDistance, LocalDuration
+    FROM CardioLog WHERE ExrLogID = InExrLogID;
     
-    RETURN(local_distance / local_duration);
+    RETURN(LocalDistance / LocalDuration);
 END;
 $$ LANGUAGE plpgsql;
 
 -- Testing out log function
 
---SELECT cardio_log_speed_function(0); -- Should be null because there is no exercise log with ID 0
---SELECT cardio_log_speed_function(1); -- Should return 0.1333
---SELECT cardio_log_speed_function(4); -- Should be null because this cardio log does not have a distance
---SELECT cardio_log_speed_function(5); -- Should be null because this exercise log ID refers to a strength log (not to a cardio log)
---SELECT cardio_log_speed_function(21); -- Should return 0.09
+--SELECT CardioLogSpeedFunction(0); -- Should be null because there is no exercise log with ID 0
+--SELECT CardioLogSpeedFunction(1); -- Should return 0.1333
+--SELECT CardioLogSpeedFunction(4); -- Should be null because this cardio log does not have a distance
+--SELECT CardioLogSpeedFunction(5); -- Should be null because this exercise log ID refers to a strength log (not to a cardio log)
+--SELECT CardioLogSpeedFunction(21); -- Should return 0.09
 
 
 
 /*
 TRIGGER
 
-Title: exercise_log_trigger
+Title: ExerciseLogTrigger
 
-Description: This trigger ensures that data entered into the exercise_log table is valid, which
-means that it refers to the same entry in the workout_plan table whether you get there through the
-workout_log table or through the exercise_plan table.
+Description: This trigger ensures that data entered into the ExerciseLog table is valID, which
+means that it refers to the same entry in the WorkoutPlan table whether you get there through the
+WorkoutLog table or through the ExercisePlan table.
 
 Justification: Because of a loop in our table relationships, it is possible that we could create an
-entry in the exercise_log table that refers to one workout_plan entry when you take one path and
-refers to a different workout_plan entry when you take the other path.
+entry in the ExerciseLog table that refers to one WorkoutPlan entry when you take one path and
+refers to a different WorkoutPlan entry when you take the other path.
 
 Expected Execution: This trigger will be called automatically before an insertion or update on
-the exercise_log table. If it finds invalid data, it will throw an error and stop the
+the ExerciseLog table. If it finds invalID data, it will throw an error and stop the
 insertion/update. Otherwise, it won't have any impact and will allow the insertion/update to
 proceed, in which case you will get to see the change in the database.
 */
 
 -- Trigger function
 
-CREATE OR REPLACE FUNCTION exercise_log_trigger()
+CREATE OR REPLACE FUNCTION ExerciseLogTrigger()
 RETURNS trigger AS $$
 DECLARE
-	local_wrk_plan_id1 INT;
-    local_wrk_plan_id2 INT;
+	LocalWrkPlanID1 INT;
+    LocalWrkPlanID2 INT;
 BEGIN
-    SELECT wrk_plan_id INTO local_wrk_plan_id1 FROM workout_log
-    WHERE wrk_log_id = NEW.wrk_log_id;
+    SELECT WrkPlanID INTO LocalWrkPlanID1 FROM WorkoutLog
+    WHERE WrkLogID = NEW.WrkLogID;
     
-    SELECT wrk_plan_id INTO local_wrk_plan_id2 FROM exercise_plan
-    WHERE exr_plan_id = NEW.exr_plan_id;
+    SELECT WrkPlanID INTO LocalWrkPlanID2 FROM ExercisePlan
+    WHERE ExrPlanID = NEW.ExrPlanID;
     
-    IF local_wrk_plan_id1 != local_wrk_plan_id2 THEN
-        RAISE EXCEPTION 'Entry to exercise_log table references two different entries in workout_plan table';
+    IF LocalWrkPlanID1 != LocalWrkPlanID2 THEN
+        RAISE EXCEPTION 'Entry to ExerciseLog table references two different entries in WorkoutPlan table';
     END IF;
 
     RETURN NEW;
@@ -263,17 +263,17 @@ $$ LANGUAGE plpgsql;
 
 -- Create the trigger
 
-CREATE TRIGGER exercise_log_trigger BEFORE INSERT OR UPDATE ON exercise_log
-    FOR EACH ROW EXECUTE FUNCTION exercise_log_trigger();
+CREATE TRIGGER ExerciseLogTrigger BEFORE INSERT OR UPDATE ON ExerciseLog
+    FOR EACH ROW EXECUTE FUNCTION ExerciseLogTrigger();
 
 -- Testing insert trigger
 
 --BEGIN;
 
---INSERT INTO workout_log VALUES (100, 4, '2023-04-08'); -- Insert a new workout_log that the exercise_log can belong to
+--INSERT INTO WorkoutLog VALUES (100, 4, '2023-04-08'); -- Insert a new WorkoutLog that the ExerciseLog can belong to
 
---INSERT INTO exercise_log VALUES (100, 7, 100, 'test log'); -- Should throw the custom error because it points to the wrong exercise_plan_id (7)
---INSERT INTO exercise_log VALUES (100, 10, 100, 'test log'); -- Should be no problem because it points to the correct exercise_plan_id (10)
+--INSERT INTO ExerciseLog VALUES (100, 7, 100, 'test log'); -- Should throw the custom error because it points to the wrong ExercisePlanID (7)
+--INSERT INTO ExerciseLog VALUES (100, 10, 100, 'test log'); -- Should be no problem because it points to the correct ExercisePlanID (10)
 
 --ROLLBACK;
 
@@ -281,6 +281,6 @@ CREATE TRIGGER exercise_log_trigger BEFORE INSERT OR UPDATE ON exercise_log
 
 --BEGIN;
 
---UPDATE exercise_log SET exr_plan_id = 7 WHERE exr_log_id = 18; -- Should throw the custom error because it points to the wrong exr_plan_id (7 instead of 10)
+--UPDATE ExerciseLog SET ExrPlanID = 7 WHERE ExrLogID = 18; -- Should throw the custom error because it points to the wrong ExrPlanID (7 instead of 10)
 
 --ROLLBACK;
